@@ -7,6 +7,6 @@ extends Camera2D
 
 func _process(delta: float) -> void:
 	if target:
-		var difference = target.global_position - global_position
+		var difference := target.global_position - global_position
 		if difference.length() > 10: 
 			global_translate(difference.normalized() * delta * movement_speed)
