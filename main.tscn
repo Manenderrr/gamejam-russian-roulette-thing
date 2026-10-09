@@ -4,17 +4,25 @@
 [ext_resource type="Script" uid="uid://caqeln6d0x07k" path="res://player.gd" id="2_h2yge"]
 
 [node name="Node2D" type="Node2D" unique_id=1789930307]
+script = ExtResource("2_h2yge")
 
 [node name="Player" type="Sprite2D" parent="." unique_id=1684890817]
 position = Vector2(138, 497)
 texture = ExtResource("1_0xm2m")
-script = ExtResource("2_h2yge")
 
 [node name="Button" type="Button" parent="." unique_id=1554285466]
 offset_left = 217.0
 offset_top = 509.0
 offset_right = 260.0
 offset_bottom = 540.0
-text = "regq"
+text = "you"
 
-[connection signal="pressed" from="Button" to="Player" method="fire"]
+[node name="Button2" type="Button" parent="." unique_id=646937081]
+offset_left = 217.0
+offset_top = 464.0
+offset_right = 326.0
+offset_bottom = 495.0
+text = "the other boi"
+
+[connection signal="pressed" from="Button" to="." method="shoot_yourself"]
+[connection signal="pressed" from="Button2" to="." method="shoot_enemy"]
