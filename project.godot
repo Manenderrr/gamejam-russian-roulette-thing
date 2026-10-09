@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Russian Roulette Thing"
+run/main_scene="uid://cxuqwogmle7f2"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 

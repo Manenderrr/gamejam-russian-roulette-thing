@@ -1,11 +1,12 @@
 extends Sprite2D
 
+var currentChamber: int = 0
+var badChamber: int = 1
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func fire():
+	if currentChamber == badChamber:
+		print("bad")
+		assert(false, "death is not implemented")
+	else:
+		print("okay")
+		currentChamber = (currentChamber + 1) % 6
