@@ -1,35 +1,16 @@
-[gd_scene format=3 uid="uid://cxuqwogmle7f2"]
+[gd_scene format=3 uid="uid://cqow47bch5ocs"]
 
-[ext_resource type="Texture2D" uid="uid://dcp4uql2u2vwr" path="res://icon.svg" id="1_0xm2m"]
-[ext_resource type="Script" uid="uid://caqeln6d0x07k" path="res://player.gd" id="2_h2yge"]
+[ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://dpgvna4rykwpu" path="res://player.gd" id="2_h2yge"]
+[ext_resource type="Script" uid="uid://d06tr0y1l07fv" path="res://camera.gd" id="3_h2yge"]
 
-[node name="Node2D" type="Node2D" unique_id=1789930307 node_paths=PackedStringArray("player", "enemy")]
+[node name="Node2D" type="Node2D" unique_id=1145955397]
+
+[node name="Player" type="Sprite2D" parent="." unique_id=1028159335]
+position = Vector2(300, 163)
+texture = ExtResource("1_0xm2m")
 script = ExtResource("2_h2yge")
-player = NodePath("Player")
-enemy = NodePath("Enemy")
 
-[node name="Player" type="Sprite2D" parent="." unique_id=1684890817]
-position = Vector2(138, 497)
-texture = ExtResource("1_0xm2m")
-
-[node name="Enemy" type="Sprite2D" parent="." unique_id=1795969896]
-self_modulate = Color(1, 0, 0, 1)
-position = Vector2(662, 502)
-texture = ExtResource("1_0xm2m")
-
-[node name="Button" type="Button" parent="." unique_id=1554285466]
-offset_left = 387.0
-offset_top = 509.0
-offset_right = 430.0
-offset_bottom = 540.0
-text = "you"
-
-[node name="Button2" type="Button" parent="." unique_id=646937081]
-offset_left = 360.0
-offset_top = 463.0
-offset_right = 469.0
-offset_bottom = 494.0
-text = "the other boi"
-
-[connection signal="pressed" from="Button" to="." method="shoot_yourself"]
-[connection signal="pressed" from="Button2" to="." method="shoot_enemy"]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1179084066 node_paths=PackedStringArray("target")]
+script = ExtResource("3_h2yge")
+target = NodePath("../Player")
