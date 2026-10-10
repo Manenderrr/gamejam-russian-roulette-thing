@@ -21,8 +21,8 @@ BetterTerrain="*uid://bgyroh6kg17a4"
 
 [display]
 
-window/size/viewport_width=640
-window/size/viewport_height=480
+window/size/viewport_width=429
+window/size/viewport_height=240
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 mouse_cursor/custom_image="uid://dp08om05brxpi"
@@ -30,6 +30,11 @@ mouse_cursor/custom_image="uid://dp08om05brxpi"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/better-terrain/plugin.cfg")
+
+[gui]
+
+theme/custom="uid://tieac26y4pa0"
+theme/custom_font="uid://v3w5ujou53aj"
 
 [input]
 
@@ -58,6 +63,11 @@ melee={
 "events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(327.625, 14.589844),"global_position":Vector2(336.625, 62.589844),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
 ]
 }
+shoot={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":2,"position":Vector2(313.1211, 21.363281),"global_position":Vector2(322.1211, 69.36328),"factor":1.0,"button_index":2,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
 
 [physics]
 
@@ -68,3 +78,4 @@ melee={
 textures/canvas_textures/default_texture_filter=3
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+2d/snap/snap_2d_transforms_to_pixel=true
