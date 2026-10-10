@@ -3,12 +3,12 @@
 importer="aseprite_wizard.plugin.static-texture"
 type="PortableCompressedTexture2D"
 uid="uid://cknubrb4nposl"
-path="res://.godot/imported/ammo_icon.aseprite-0160d16089f650a8f6d63711a1461ff6.res"
+path="res://.godot/imported/ammo_icon.aseprite-34f47aeb2f3c82a3eedcc0353488f653.res"
 
 [deps]
 
-source_file="res://gfx/ammo_icon.aseprite"
-dest_files=["res://.godot/imported/ammo_icon.aseprite-0160d16089f650a8f6d63711a1461ff6.res"]
+source_file="res://assets/gfx/ammo_icon.aseprite"
+dest_files=["res://.godot/imported/ammo_icon.aseprite-34f47aeb2f3c82a3eedcc0353488f653.res"]
 
 [params]
 

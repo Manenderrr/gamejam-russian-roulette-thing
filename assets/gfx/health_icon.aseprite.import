@@ -3,12 +3,12 @@
 importer="aseprite_wizard.plugin.static-texture"
 type="PortableCompressedTexture2D"
 uid="uid://dghhvr5320p3n"
-path="res://.godot/imported/health_icon.aseprite-f2656fe06f308cb109f6556d66f3a73c.res"
+path="res://.godot/imported/health_icon.aseprite-0c95b80631905118491cbe384689c100.res"
 
 [deps]
 
-source_file="res://gfx/health_icon.aseprite"
-dest_files=["res://.godot/imported/health_icon.aseprite-f2656fe06f308cb109f6556d66f3a73c.res"]
+source_file="res://assets/gfx/health_icon.aseprite"
+dest_files=["res://.godot/imported/health_icon.aseprite-0c95b80631905118491cbe384689c100.res"]
 
 [params]
 

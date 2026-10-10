@@ -3,12 +3,12 @@
 importer="aseprite_wizard.plugin.static-texture"
 type="PortableCompressedTexture2D"
 uid="uid://ngqcgfagl157"
-path="res://.godot/imported/player.ase-09969463edd832cfb9389d8e4cecd6ec.res"
+path="res://.godot/imported/player.ase-949f2dab87627c44cc15d0e67e257f21.res"
 
 [deps]
 
-source_file="res://gfx/player/player.ase"
-dest_files=["res://.godot/imported/player.ase-09969463edd832cfb9389d8e4cecd6ec.res"]
+source_file="res://assets/gfx/player/player.ase"
+dest_files=["res://.godot/imported/player.ase-949f2dab87627c44cc15d0e67e257f21.res"]
 
 [params]
 
