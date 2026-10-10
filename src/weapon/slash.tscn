@@ -1,0 +1,21 @@
+[gd_scene format=4 uid="uid://chm37nv71b68d"]
+
+[ext_resource type="Script" path="res://src/weapon/slash.gd" id="1_slash"]
+[ext_resource type="Texture2D" path="res://assets/gfx/weapon/katana/katanal1.png" id="2_slash_sprite"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(110, 130)
+
+[node name="Area2D" type="Area2D"]
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("1_slash")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -65)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Sprite2D" type="Sprite2D" parent="."
+texture_filter = 1]
+position = Vector2(0, -65)
+texture = ExtResource("2_slash_sprite")

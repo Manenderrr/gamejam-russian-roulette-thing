@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bu1w2nbcs7o70"
+path="res://.godot/imported/heal.aseprite-7cf5c5e7a49b1e52153cc569eb5272fa.res"
+
+[deps]
+
+source_file="res://assets/gfx/heal/heal.aseprite"
+dest_files=["res://.godot/imported/heal.aseprite-7cf5c5e7a49b1e52153cc569eb5272fa.res"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bfrxiysy4a0ik"
+path="res://.godot/imported/katanal1.ase-4c8ed4cc59a762143547ccf99a422542.res"
+
+[deps]
+
+source_file="res://assets/gfx/weapon/katana/katanal1.ase"
+dest_files=["res://.godot/imported/katanal1.ase-4c8ed4cc59a762143547ccf99a422542.res"]
+
+[params]
+

@@ -1,0 +1,63 @@
+[gd_scene format=4 uid="uid://c44yg3h8pq5pw"]
+
+[ext_resource type="Script" path="res://src/level/level.gd" id="1_level"]
+[ext_resource type="Script" path="res://src/player.gd" id="3_player"]
+[ext_resource type="Script" path="res://src/camera.gd" id="4_camera"]
+[ext_resource type="TileSet" path="res://assets/tileset.tres" id="5_tileset"]
+[ext_resource type="Texture2D" path="res://assets/gfx/player/idle.webp" id="6_sprite"]
+[ext_resource type="PackedScene" path="res://src/hud/pause_menu.tscn" id="7_pause_scene"]
+[ext_resource type="Script" path="res://src/level/wave_manager.gd" id="8_wave_manager"]
+[ext_resource type="PackedScene" path="res://src/hud/upgrade_ui.tscn" id="9_upgrade_ui"]
+[ext_resource type="PackedScene" path="res://src/hud/ui_hud.tscn" id="10_ui_hud"]
+[ext_resource type="PackedScene" path="res://src/hud/death_screen.tscn" id="11_death"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(19, 15)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_melee"]
+size = Vector2(100, 80)
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_level")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = ExtResource("5_tileset")
+
+[node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
+motion_mode = 1
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("3_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(-0.5, 1.5)
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Sprite" type="Sprite2D" parent="Player"]
+texture_filter = 1
+texture = ExtResource("6_sprite")
+
+[node name="MeleeCollision" type="ShapeCast2D" parent="Player" groups=["player_melee"]]
+position = Vector2(0, -9)
+enabled = false
+shape = SubResource("RectangleShape2D_melee")
+collision_mask = 4
+
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
+zoom = Vector2(2, 2)
+script = ExtResource("4_camera")
+target = NodePath("../Player/Sprite")
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_pause_scene")]
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("8_wave_manager")
+
+[node name="UpgradeUI" parent="." instance=ExtResource("9_upgrade_ui")]
+
+[node name="UIHUD" parent="." instance=ExtResource("10_ui_hud")]
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="DeathScreen" parent="." instance=ExtResource("11_death")]
