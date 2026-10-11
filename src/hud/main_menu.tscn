@@ -43,12 +43,10 @@ text = "> CLEAN THE FLOORS <"
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="VBoxContainer" unique_id=1424727805]
-custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 text = "PLAY"
 
 [node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=2046425379]
-custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 text = "EXIT"
 

@@ -1,12 +1,13 @@
 [gd_resource type="Theme" format=3 uid="uid://tieac26y4pa0"]
 
-[ext_resource type="StyleBox" uid="uid://5tdaf7fntj2h" path="res://ui/panels/button/hover.tres" id="1_tbeor"]
+[ext_resource type="StyleBox" uid="uid://bk475pjhuamf5" path="res://ui/panels/button/hover.tres" id="1_tbeor"]
 [ext_resource type="StyleBox" uid="uid://r8nafna2yojs" path="res://ui/panels/button/normal.tres" id="2_mk0s6"]
-[ext_resource type="StyleBox" uid="uid://bk475pjhuamf5" path="res://ui/panels/button/pressed.tres" id="3_5kxjo"]
+[ext_resource type="StyleBox" uid="uid://5tdaf7fntj2h" path="res://ui/panels/button/pressed.tres" id="3_5kxjo"]
 [ext_resource type="Texture2D" uid="uid://bgd0hlvah4vq3" path="res://ui/panels/slider/grabber.tres" id="4_g7fvb"]
 [ext_resource type="StyleBox" uid="uid://o8s0pw7yvosx" path="res://ui/panels/slider/slider.tres" id="4_mk0s6"]
 [ext_resource type="Texture2D" uid="uid://ynuh3i4ekma1" path="res://ui/panels/slider/grabber_highlight.tres" id="5_tpf0h"]
 [ext_resource type="StyleBox" uid="uid://d0w2146oby28" path="res://ui/panels/slider/grabber_area.tres" id="6_tpf0h"]
+[ext_resource type="StyleBox" uid="uid://cthmlvwuxew7e" path="res://ui/panels/slider/grabber_area_highlight.tres" id="7_5y56j"]
 
 [resource]
 BoxContainer/constants/separation = 8
@@ -17,4 +18,5 @@ Control/font_sizes/font_size = 16
 HSlider/icons/grabber = ExtResource("4_g7fvb")
 HSlider/icons/grabber_highlight = ExtResource("5_tpf0h")
 HSlider/styles/grabber_area = ExtResource("6_tpf0h")
+HSlider/styles/grabber_area_highlight = ExtResource("7_5y56j")
 HSlider/styles/slider = ExtResource("4_mk0s6")

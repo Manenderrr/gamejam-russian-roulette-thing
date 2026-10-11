@@ -8,28 +8,6 @@ signal upgrade_selected(choice: Dictionary)
 @onready var title: Label = $Panel/VBoxContainer/Title
 @onready var wave_label: Label = $Panel/VBoxContainer/WaveLabel
 
-var mono_font: SystemFont = null
-var btn_normal: StyleBoxFlat = null
-var btn_hover: StyleBoxFlat = null
-var btn_pressed: StyleBoxFlat = null
-
-func _make_styles() -> void:
-	if mono_font != null:
-		return
-	mono_font = SystemFont.new()
-	mono_font.font_names = PackedStringArray(["monospace"])
-	btn_normal = _make_box(Color(0.07, 0.07, 0.1, 1), Color(0.92, 0.95, 0.9, 1))
-	btn_hover = _make_box(Color(0.4, 0.07, 0.22, 1), Color(1, 0.18, 0.53, 1))
-	btn_pressed = _make_box(Color(0.05, 0.3, 0.38, 1), Color(0.16, 0.9, 1, 1))
-
-func _make_box(bg: Color, border: Color) -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.border_color = border
-	sb.set_border_width_all(2)
-	sb.set_corner_radius_all(0)
-	return sb
-
 var pending_choices: Array[Dictionary] = []
 var player_stats: PlayerStats
 var katana: Weapon
@@ -53,19 +31,12 @@ func show_upgrades(choices: Array[Dictionary], stats: PlayerStats, katana_weapon
 	for child in container.get_children():
 		child.queue_free()
 
-	_make_styles()
 	wave_label.text = "FLOOR %d CLEANED - PICK ONE" % current_wave_num
 
 	for choice in pending_choices:
 		var btn := Button.new()
 		btn.text = str(choice.get("text", "Upgrade"))
 		btn.tooltip_text = str(choice.get("description", ""))
-		btn.custom_minimum_size = Vector2(0, 56)
-		btn.add_theme_font_override("font", mono_font)
-		btn.add_theme_font_size_override("font_size", 22)
-		btn.add_theme_stylebox_override("normal", btn_normal)
-		btn.add_theme_stylebox_override("hover", btn_hover)
-		btn.add_theme_stylebox_override("pressed", btn_pressed)
 		btn.pressed.connect(_on_choice_selected.bind(choice))
 		container.add_child(btn)
 

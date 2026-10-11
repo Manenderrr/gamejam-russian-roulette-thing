@@ -42,11 +42,9 @@ text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="Panel/VBoxContainer" unique_id=651638668]
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "CONTINUE"
 
 [node name="ExitToMenuButton" type="Button" parent="Panel/VBoxContainer" unique_id=1350093630]
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "EXIT TO MENU"

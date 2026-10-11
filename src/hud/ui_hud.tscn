@@ -12,10 +12,6 @@ bg_color = Color(0.2, 0.9, 0.35, 1)
 [sub_resource type="StyleBoxFlat" id="SB_xp_fill"]
 bg_color = Color(1, 0.85, 0.2, 1)
 
-[sub_resource type="SystemFont" id="Font_mono"]
-font_names = PackedStringArray("monospace")
-subpixel_positioning = 0
-
 [node name="CanvasLayer" type="CanvasLayer" unique_id=921743387 node_paths=PackedStringArray("health_bar", "health_label", "wave_label", "left_label", "ammo_label", "xp_bar", "xp_label", "weapon_label", "stat_points_label")]
 layer = 50
 script = ExtResource("1_ui_hud")
@@ -78,11 +74,8 @@ theme_override_colors/font_color = Color(0.92, 0.95, 0.9, 1)
 text = "AMMO: 30 / 30"
 
 [node name="StatPointsLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=1809698014]
-visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.18, 0.53, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 20
 text = "STAT PTS: 0"
 
 [node name="MarginContainer2" type="MarginContainer" parent="." unique_id=276641729]

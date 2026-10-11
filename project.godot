@@ -28,6 +28,7 @@ BetterTerrain="*uid://bgyroh6kg17a4"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 mouse_cursor/custom_image="uid://dp08om05brxpi"
 mouse_cursor/custom_image_hotspot=Vector2(16, 16)
