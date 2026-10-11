@@ -76,39 +76,40 @@ func _build_floor(wave_number: int) -> void:
 	var map_w: int = result["map_w"]
 	var map_h: int = result["map_h"]
 
-	for cell in floor_set:
-		tile_map.set_cell(cell, 0, Vector2i(FLOOR_PLAIN, 0))
-	# Walls anywhere an empty cell touches floor.
-	for cell in floor_set:
-		var c: Vector2i = cell
-		for dx in [-1, 0, 1]:
-			for dy in [-1, 0, 1]:
-				if dx == 0 and dy == 0:
-					continue
-				var n: Vector2i = c + Vector2i(dx, dy)
-				if not floor_set.has(n):
-					tile_map.set_cell(n, 0, WALL_CELL)
-	# Solid border around the whole map.
-	for x in range(-2, map_w + 2):
-		tile_map.set_cell(Vector2i(x, -2), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(x, -1), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(x, map_h + 1), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(x, map_h + 2), 0, WALL_CELL)
-	for y in range(-2, map_h + 2):
-		tile_map.set_cell(Vector2i(-2, y), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(-1, y), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(map_w + 1, y), 0, WALL_CELL)
-		tile_map.set_cell(Vector2i(map_w + 2, y), 0, WALL_CELL)
+	var floors: Array[Vector2i] = []
+	var walls: Array[Vector2i] = []
 
 	for cell in floor_set:
-		var c: Vector2i = cell
-		var wall_n: bool = not floor_set.has(c + Vector2i(0, -1))
-		var wall_e: bool = not floor_set.has(c + Vector2i(1, 0))
-		var wall_s: bool = not floor_set.has(c + Vector2i(0, 1))
-		if wall_n:
-			tile_map.set_cell(c, 0, Vector2i(TRIM_NORTH, 0))
-		elif wall_e and wall_s:
-			tile_map.set_cell(c, 0, Vector2i(TRIM_SE, 0))
+		# Record floors into an array
+		floors.append(cell)
+
+		# Walls anywhere an empty cell touches floor.
+		for dx in range(-1, 2):
+			for dy in range(-1, 2):
+				if dx == 0 and dy == 0:
+					continue
+				var n: Vector2i = cell + Vector2i(dx, dy)
+				if not floor_set.has(n):
+					walls.append(n)
+					#tile_map.set_cell(n, 0, WALL_CELL)
+
+	BetterTerrain.set_cells(tile_map, floors, 0)
+	BetterTerrain.set_cells(tile_map, walls, 1)
+
+	# Solid border around the whole map.
+	#for x in range(-2, map_w + 2):
+	#	tile_map.set_cell(Vector2i(x, -2), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(x, -1), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(x, map_h + 1), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(x, map_h + 2), 0, WALL_CELL)
+	#for y in range(-2, map_h + 2):
+	#	tile_map.set_cell(Vector2i(-2, y), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(-1, y), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(map_w + 1, y), 0, WALL_CELL)
+	#	tile_map.set_cell(Vector2i(map_w + 2, y), 0, WALL_CELL)
+
+	BetterTerrain.update_terrain_area(tile_map, Rect2i(0, 0, map_w, map_h), false)
+
 	_build_pathgrid(floor_set, map_w)
 
 	var room_list: Array = []
