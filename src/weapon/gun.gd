@@ -4,6 +4,7 @@ class_name Gun
 # Gun evolution: Pistol -> Shotgun -> Minigun. Tier-ups swap the whole
 # package (damage, rate, pellets, mag, bullet art); no stat levels.
 const TIER_NAMES: Array[String] = ["Pistol", "Shotgun", "Minigun"]
+const TIER_KEYS: Array[String] = ["weapon_pistol", "weapon_shotgun", "weapon_minigun"]
 const TIER_MAX := 2
 const TIER_BULLETS: Array[Texture2D] = [
 	preload("res://assets/gfx/weapon/gun/bullet.png"),
@@ -59,7 +60,7 @@ func _apply_tier() -> void:
 			pellets = 4
 			spread = 0.18
 			bullet_speed = 1200.0
-			max_ammo = 200
+			max_ammo = 5000
 	current_ammo = max_ammo
 
 func can_tier_up() -> bool:
@@ -70,15 +71,18 @@ func upgrade_tier() -> void:
 		tier += 1
 		_apply_tier()
 
+func display_name() -> String:
+	return Loc.tr_key(TIER_KEYS[clampi(tier, 0, TIER_MAX)])
+
 func tier_up_name() -> String:
-	return TIER_NAMES[clampi(tier + 1, 0, TIER_MAX)]
+	return Loc.tr_key(TIER_KEYS[clampi(tier + 1, 0, TIER_MAX)])
 
 func tier_up_description() -> String:
 	match tier + 1:
 		1:
-			return "High damage, 2 pellets per shot"
+			return Loc.tr_key("gun_desc_shotgun")
 		_:
-			return "Ultrafast, 4-bullet bursts, hold to spray"
+			return Loc.tr_key("gun_desc_minigun")
 
 func start_firing() -> void:
 	is_firing = true
@@ -120,13 +124,9 @@ func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vect
 		bullet.set_damage(get_damage(damage_mult))
 		fired = true
 	
-	# Play tier-specific sound
-	if wielder != null and wielder.has_method("get_tree"):
-		var tree := wielder.get_tree()
-		if tree != null and tree.has_method("get_node_or_null"):
-			var gm: Node = tree.get_node_or_null("/root/GameManager")
-			if gm != null and gm.has_method("play_sfx"):
-				gm.call("play_sfx", TIER_SFX[tier])
+	# Play tier-specific sound (minigun runs a single loop instead).
+	if tier < TIER_MAX and wielder != null and wielder.has_method("get_tree"):
+		GameManager.play_sfx(TIER_SFX[tier])
 	
 	return fired
 

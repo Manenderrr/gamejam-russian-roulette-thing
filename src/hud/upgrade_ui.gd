@@ -9,6 +9,7 @@ signal upgrade_selected(choice: Dictionary)
 @onready var wave_label: Label = $Panel/VBoxContainer/WaveLabel
 
 var pending_choices: Array[Dictionary] = []
+var base_stat_choices: Array[Dictionary] = []
 var player_stats: PlayerStats
 var katana: Weapon
 var gun: Weapon
@@ -21,25 +22,17 @@ func _ready() -> void:
 	visible = false
 	if is_instance_valid(panel):
 		panel.visible = false
+	Loc.language_changed.connect(_on_language_changed)
 
 func show_upgrades(choices: Array[Dictionary], stats: PlayerStats, katana_weapon: Weapon, gun_weapon: Weapon, wave_num: int = 1) -> void:
 	player_stats = stats
 	katana = katana_weapon
 	gun = gun_weapon
 	current_wave_num = wave_num
-	pending_choices = _filter_choices(choices)
+	base_stat_choices = choices
+	pending_choices = _filter_choices(base_stat_choices)
 
-	for child in container.get_children():
-		child.queue_free()
-
-	wave_label.text = "FLOOR %d CLEANED - PICK ONE" % current_wave_num
-
-	for choice in pending_choices:
-		var btn := Button.new()
-		btn.text = str(choice.get("text", "Upgrade"))
-		btn.tooltip_text = str(choice.get("description", ""))
-		btn.pressed.connect(_on_choice_selected.bind(choice))
-		container.add_child(btn)
+	_rebuild_texts()
 
 	if is_instance_valid(panel):
 		panel.visible = true
@@ -50,6 +43,37 @@ func show_upgrades(choices: Array[Dictionary], stats: PlayerStats, katana_weapon
 	accept_input_after = Time.get_ticks_msec() / 1000.0 + 0.5
 	GameManager.play_sfx("window")
 
+func _rebuild_texts() -> void:
+	for child in container.get_children():
+		child.queue_free()
+
+	title.text = Loc.tr_key("upgrade_title")
+	wave_label.text = Loc.tr_key("upgrade_floor_cleaned", [current_wave_num])
+
+	for choice in pending_choices:
+		var btn := Button.new()
+		var localized: Array = _localize_choice(choice)
+		btn.text = str(localized[0])
+		btn.tooltip_text = str(localized[1])
+		btn.pressed.connect(_on_choice_selected.bind(choice))
+		container.add_child(btn)
+
+func _localize_choice(choice: Dictionary) -> Array:
+	var text: String = str(choice.get("text", "Upgrade"))
+	var desc: String = str(choice.get("description", ""))
+	if choice.has("text_key"):
+		var args: Array = [choice.get("text_arg")] if choice.has("text_arg") else []
+		text = Loc.tr_key(str(choice["text_key"]), args)
+	if choice.has("desc_key"):
+		desc = Loc.tr_key(str(choice["desc_key"]))
+	return [text, desc]
+
+func _on_language_changed() -> void:
+	if not visible:
+		return
+	pending_choices = _filter_choices(base_stat_choices)
+	_rebuild_texts()
+
 func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 	var filtered: Array[Dictionary] = []
 	var available_choices: Array[Dictionary] = []
@@ -59,6 +83,8 @@ func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 		available_choices.append({
 			"type": "bonus",
 			"bonus": "katana",
+			"text_key": "up_katana",
+			"text_arg": katana.level + 1,
 			"text": "KATANA LENGTH Lv " + str(katana.level + 1),
 			"description": katana.get_upgrade_description()
 		})
@@ -76,6 +102,8 @@ func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 	available_choices.append({
 		"type": "bonus",
 		"bonus": "hp",
+		"text_key": "up_maxhp",
+		"desc_key": "up_maxhp_desc",
 		"text": "MAX HP +25",
 		"description": "Increase max HP by 25 and fully heal"
 	})

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bx5f5r0u86nms" path="res://src/hud/pause_menu.gd" id="1_fghij"]
 [ext_resource type="StyleBox" uid="uid://dp7qrk1grvsft" path="res://ui/panels/cyan_border_box.tres" id="2_cycf0"]
+[ext_resource type="PackedScene" path="res://src/hud/settings_screen.tscn" id="3_settings"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=963202784]
 layer = 100
@@ -48,3 +49,9 @@ text = "CONTINUE"
 [node name="ExitToMenuButton" type="Button" parent="Panel/VBoxContainer" unique_id=1350093630]
 layout_mode = 2
 text = "EXIT TO MENU"
+
+[node name="SettingsButton" type="Button" parent="Panel/VBoxContainer" unique_id=1350093631]
+layout_mode = 2
+text = "SETTINGS"
+
+[node name="SettingsScreen" parent="." instance=ExtResource("3_settings")]

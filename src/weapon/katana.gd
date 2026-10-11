@@ -49,18 +49,21 @@ func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vect
 		return true
 	return false
 
+func display_name() -> String:
+	return Loc.tr_key("weapon_katana")
+
 func get_upgrade_description() -> String:
 	match level:
 		1:
-			return "Blade 64px, faster swing"
+			return Loc.tr_key("katana_desc_1")
 		2:
-			return "Blade 72px, faster swing"
+			return Loc.tr_key("katana_desc_2")
 		3:
-			return "Blade 80px, longer reach"
+			return Loc.tr_key("katana_desc_3")
 		4:
-			return "Blade 88px, fastest swing"
+			return Loc.tr_key("katana_desc_4")
 		_:
-			return "MAX LEVEL"
+			return Loc.tr_key("katana_max")
 
 func _apply_upgrade() -> void:
 	slash_range = BLADE_LENGTHS[clampi(level - 1, 0, BLADE_LENGTHS.size() - 1)]

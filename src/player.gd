@@ -36,6 +36,7 @@ var swing_anim: float = 0.0
 const SWING_ANIM_LEN: float = 0.2
 var dead: bool = false
 var flash_tween: Tween = null
+var controls_locked: bool = false
 
 func _ready() -> void:
 	if stats == null:
@@ -57,6 +58,10 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if stats == null:
 		return
+	if controls_locked:
+		GameManager.stop_minigun_loop()
+		_update_animation(delta)
+		return
 	_handle_movement()
 	_handle_rotation()
 	_handle_dash()
@@ -67,9 +72,12 @@ func _physics_process(delta: float) -> void:
 		dash_cooldown -= delta
 
 func _handle_minigun_autofire(_delta: float) -> void:
-	if gun != null and gun.tier == 2 and gun.is_firing:
+	if gun != null and gun.tier == 2 and gun.is_firing and gun.current_ammo > 0:
 		var mouse_pos: Vector2 = get_global_mouse_position()
 		gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self)
+		GameManager.start_minigun_loop()
+	else:
+		GameManager.stop_minigun_loop()
 
 func _update_animation(delta: float) -> void:
 	if sprite == null:
@@ -118,6 +126,8 @@ func _handle_dash() -> void:
 			dash_cooldown = 1.0
 
 func _unhandled_input(event: InputEvent) -> void:
+	if controls_locked or dead:
+		return
 	if event.is_action_pressed("melee") and current_weapon == "katana":
 		_attack_katana()
 	elif event.is_action_pressed("shoot") and current_weapon in ["pistol", "shotgun"]:
@@ -125,23 +135,29 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("shoot") and current_weapon == "minigun":
 		if gun != null:
 			gun.start_firing()
+			if gun.current_ammo > 0:
+				GameManager.start_minigun_loop()
 	elif event.is_action_released("shoot") and current_weapon == "minigun":
 		if gun != null:
 			gun.stop_firing()
+		GameManager.stop_minigun_loop()
 	elif event.is_action_pressed("switch_weapon"):
+		if gun != null:
+			gun.stop_firing()
+		GameManager.stop_minigun_loop()
 		_switch_weapon()
 
 func _attack_katana() -> void:
 	if katana == null or stats == null:
 		return
+	var mouse_pos: Vector2 = get_global_mouse_position()
+	if not katana.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self):
+		return
 	swing_anim = SWING_ANIM_LEN
+	GameManager.play_sfx("sweep")
 	if melee_collision != null:
 		melee_collision.enabled = true
 		melee_collision.force_shapecast_update()
-
-	var mouse_pos: Vector2 = get_global_mouse_position()
-	if katana.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self):
-		GameManager.play_sfx("sweep")
 
 	call_deferred("_disable_melee")
 
@@ -152,9 +168,9 @@ func _disable_melee() -> void:
 func _attack_gun() -> void:
 	if gun == null or stats == null:
 		return
-	shoot_anim = SHOOT_ANIM_LEN
 	var mouse_pos: Vector2 = get_global_mouse_position()
-	gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self)
+	if gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self):
+		shoot_anim = SHOOT_ANIM_LEN
 
 func _switch_weapon() -> void:
 	match current_weapon:
@@ -177,9 +193,10 @@ func _switch_weapon() -> void:
 	print("Switched to: ", current_weapon)
 
 func take_damage(amount: float) -> void:
-	if stats == null or dead:
+	if stats == null or dead or controls_locked:
 		return
 	stats.take_damage(amount)
+	GameManager.play_sfx("hit")
 	_flash_red()
 	if stats.current_health <= 0.0:
 		die()
@@ -198,6 +215,9 @@ func die() -> void:
 		return
 	dead = true
 	velocity = Vector2.ZERO
+	if gun != null:
+		gun.stop_firing()
+	GameManager.stop_minigun_loop()
 	get_tree().call_group("level", "show_death")
 
 func heal(amount: float) -> void:

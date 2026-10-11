@@ -7,6 +7,9 @@ class_name WaveManager
 signal wave_started(wave_number: int)
 signal wave_ended(wave_number: int)
 signal upgrade_phase_started(choices: Array[Dictionary])
+signal final_floor_cleared
+
+const FINAL_FLOOR: int = 40
 
 @export var base_enemies_per_wave: int = 10
 @export var enemy_increase_per_wave: int = 3
@@ -168,6 +171,9 @@ func on_enemy_killed() -> void:
 func _end_wave() -> void:
 	is_wave_active = false
 	wave_ended.emit(current_wave)
+	if current_wave >= FINAL_FLOOR:
+		final_floor_cleared.emit()
+		return
 	upgrade_phase_started.emit(_generate_upgrade_choices())
 
 func _generate_upgrade_choices() -> Array[Dictionary]:
@@ -175,18 +181,24 @@ func _generate_upgrade_choices() -> Array[Dictionary]:
 	choices.append({
 		"type": "stat",
 		"stat": "health",
+		"text_key": "up_hp",
+		"desc_key": "up_hp_desc",
 		"text": "HP +20",
 		"description": "Increase max health by 20"
 	})
 	choices.append({
 		"type": "stat",
 		"stat": "speed",
+		"text_key": "up_speed",
+		"desc_key": "up_speed_desc",
 		"text": "Speed +30",
 		"description": "Increase movement speed by 30"
 	})
 	choices.append({
 		"type": "stat",
 		"stat": "damage",
+		"text_key": "up_damage",
+		"desc_key": "up_damage_desc",
 		"text": "Damage +20%",
 		"description": "Increase damage multiplier by 20%"
 	})

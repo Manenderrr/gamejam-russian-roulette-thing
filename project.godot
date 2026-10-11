@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Vampire Survival"
+config/name="Katana-Punk"
 run/main_scene="res://src/hud/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://assets/icon.svg"
@@ -23,6 +23,7 @@ buses/default_bus_layout="uid://clcthjklips3e"
 
 GameManager="*res://src/game_manager.gd"
 BetterTerrain="*uid://bgyroh6kg17a4"
+Loc="*res://src/loc/loc.gd"
 
 [display]
 

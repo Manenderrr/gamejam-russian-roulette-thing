@@ -4,107 +4,70 @@
 [ext_resource type="Script" uid="uid://c02yu8e5e7tbe" path="res://src/hud/main_menu.gd" id="1_abcde"]
 [ext_resource type="AudioStream" uid="uid://bxl15i7uye1in" path="res://assets/audio/music/gamemenu.ogg" id="2_music"]
 [ext_resource type="PackedScene" uid="uid://c44yg3h8pq5pw" path="res://src/level/level.tscn" id="2_x6pyu"]
-[ext_resource type="Texture2D" uid="uid://br0pu7ros2n1g" path="res://assets/gfx/sound_icon.aseprite" id="4_elp1e"]
-[ext_resource type="Script" uid="uid://dtkomsugos2xc" path="res://ui/volume_slider.gd" id="5_wls6m"]
-[ext_resource type="Script" uid="uid://dt2xci0h3rsy5" path="res://ui/format_string_label.gd" id="6_14qnn"]
-[ext_resource type="Texture2D" uid="uid://cjs8fletykw82" path="res://assets/gfx/music_icon.aseprite" id="7_2tdun"]
+[ext_resource type="Texture2D" path="res://assets/gfx/bg/bg.webp" id="8_bg"]
+[ext_resource type="PackedScene" path="res://src/hud/settings_screen.tscn" id="9_settings"]
+[ext_resource type="PackedScene" path="res://src/hud/about_screen.tscn" id="10_about"]
 
-[node name="MainMenu" type="PanelContainer" unique_id=526200657]
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_abcde")
+level_scene = ExtResource("2_x6pyu")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("8_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -190.0
-offset_right = 144.0
-offset_bottom = 125.0
+offset_left = -200.0
+offset_top = -170.0
+offset_right = 200.0
+offset_bottom = 170.0
 theme_override_styles/panel = ExtResource("1_14qnn")
-script = ExtResource("1_abcde")
-level_scene = ExtResource("2_x6pyu")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=744750937]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
 theme_override_constants/separation = 16
+alignment = 1
 
-[node name="Title" type="Label" parent="VBoxContainer" unique_id=1481745907]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.19607843, 0.50980395, 1)
-theme_override_font_sizes/font_size = 24
-text = "VAMPIRE
-SURVIVAL"
-horizontal_alignment = 1
-
-[node name="SubTitle" type="Label" parent="VBoxContainer" unique_id=889009993]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.15686275, 0.9019608, 1, 1)
-theme_override_font_sizes/font_size = 16
-text = "> CLEAN THE FLOORS <"
-horizontal_alignment = 1
-
-[node name="PlayButton" type="Button" parent="VBoxContainer" unique_id=1424727805]
+[node name="PlayButton" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
 text = "PLAY"
 
-[node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=2046425379]
+[node name="SettingsButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "SETTINGS"
+
+[node name="AboutButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "ABOUT"
+
+[node name="ExitButton" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
 text = "EXIT"
 
-[node name="VolumeContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=211970562]
-layout_mode = 2
-
-[node name="MainContainer" type="HBoxContainer" parent="VBoxContainer/VolumeContainer" unique_id=1935931304]
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=466647911]
-layout_mode = 2
-texture = ExtResource("4_elp1e")
-stretch_mode = 5
-
-[node name="Slider" type="HSlider" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=1656928699]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-max_value = 200.0
-value = 67.0
-script = ExtResource("5_wls6m")
-bus_name = &"Main"
-
-[node name="Indicator" type="Label" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=1274904056]
-layout_mode = 2
-text = "670%"
-script = ExtResource("6_14qnn")
-format_string = "%3d%%"
-
-[node name="MusicContainer" type="HBoxContainer" parent="VBoxContainer/VolumeContainer" unique_id=379922623]
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=27679969]
-layout_mode = 2
-texture = ExtResource("7_2tdun")
-stretch_mode = 5
-
-[node name="Slider" type="HSlider" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=1273306871]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-max_value = 200.0
-value = 67.0
-script = ExtResource("5_wls6m")
-bus_name = &"Music"
-
-[node name="Indicator" type="Label" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=189000351]
-layout_mode = 2
-text = "670%"
-script = ExtResource("6_14qnn")
-format_string = "%3d%%"
-
-[node name="Music" type="AudioStreamPlayer" parent="." unique_id=949900550]
+[node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_music")
 autoplay = true
 bus = &"Music"
 
-[connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="begin_game"]
-[connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="quit_game"]
-[connection signal="value_changed" from="VBoxContainer/VolumeContainer/MainContainer/Slider" to="VBoxContainer/VolumeContainer/MainContainer/Indicator" method="update"]
-[connection signal="value_changed" from="VBoxContainer/VolumeContainer/MusicContainer/Slider" to="VBoxContainer/VolumeContainer/MusicContainer/Indicator" method="update"]
+[node name="SettingsScreen" parent="." instance=ExtResource("9_settings")]
+
+[node name="AboutScreen" parent="." instance=ExtResource("10_about")]
+
+[connection signal="pressed" from="Panel/VBoxContainer/PlayButton" to="." method="begin_game"]
+[connection signal="pressed" from="Panel/VBoxContainer/ExitButton" to="." method="quit_game"]

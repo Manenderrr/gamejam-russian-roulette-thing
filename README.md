@@ -42,6 +42,6 @@ All music is written by Aust Alexander (known as D7TUN6 in music industry), main
 ## Made by
 
 - Artur Salyakhutdinov — sprites, characters
-- Makar — code
+- Makar Guryanov — code
 - Pyotr Struin — sprites, sound effects
 - Aust Alexander — code, sprites, music

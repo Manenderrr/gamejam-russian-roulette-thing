@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locale lang="ru">
+  <string id="menu_title">КАТАНА-
+ПАНК</string>
+  <string id="menu_subtitle">&gt; ЗАЧИСТИ ЭТАЖИ &lt;</string>
+  <string id="menu_play">ИГРАТЬ</string>
+  <string id="menu_exit">ВЫХОД</string>
+  <string id="menu_settings">НАСТРОЙКИ</string>
+  <string id="menu_about">ОБ ИГРЕ</string>
+  <string id="about_title">ОБ ИГРЕ</string>
+  <string id="about_h_game">ИГРА</string>
+  <string id="about_name">КАТАНА-ПАНК</string>
+  <string id="about_genre">Жанр: экшен-рогалик с видом сверху.</string>
+  <string id="about_summary">Герой сражается против крупной корпорации и волн её сотрудников, прокачивая характеристики, катану и огнестрел.</string>
+  <string id="about_h_loop">ГЕЙМПЛЕЙ</string>
+  <string id="about_loop">Игровой цикл: убивайте врагов, чтобы улучшить катану или огнестрел на свой выбор. За зачистку этажа даётся одно улучшение; опыт с врагов идёт в HP, скорость и урон. Похожие игры: Vampire Survivors, Hotline Miami, DOOM. Всего 40 этажей. После зачистки 40-го этажа герой закладывает бомбу в центре, выпрыгивает в окно с парашютом, и башня злой корпорации взрывается.</string>
+  <string id="about_h_controls">УПРАВЛЕНИЕ И РЕСУРСЫ</string>
+  <string id="about_controls">Управление: движение, атака катаной, выстрелы (пистолет, дробовик, миниган).</string>
+  <string id="about_resources">Ресурсы: патроны и опыт падают с врагов и подбираются автоматически.</string>
+  <string id="about_h_team">КОМАНДА</string>
+  <string id="about_team">Авторы:
+- Артур Саляхутдинов - спрайты, персонажи
+- Гурьянов Макар - код
+- Пётр Струин - спрайты, звуки, декорации
+- Aust Alexander - код, спрайты, музыка</string>
+  <string id="about_h_music">МУЗЫКА</string>
+  <string id="about_music">Музыка: всё написано D7TUN6 (Alexander).
+Использованные треки:
+start.ogg - broken_shit from unreleases1 on YouTube
+Lucifer - 2 from Wh1te Hous3
+Drain - 3 from obskr3.e
+AC41-00050A - 4 from B TWIN
+ayounemd - 4 from obskr3.e
+betrFlonM - 5 from obskr3.e
+goresinn - 7 from obskr3.e
+unnrR35sT - 8 from Wh1te Hous3
+D0nor - 10 from Wh1te Hous3
+Poignant - 11 from Wh1te Hous3
+end.ogg - kal.mp3 from unreleases1 on YouTube
+Написано специально для игры:
+gamemenu.ogg
+gamebattle1.ogg</string>
+  <string id="settings_title">НАСТРОЙКИ</string>
+  <string id="settings_music">МУЗЫКА</string>
+  <string id="settings_effects">ЗВУКОВЫЕ ЭФФЕКТЫ</string>
+  <string id="settings_language">ЯЗЫК</string>
+  <string id="settings_back">НАЗАД</string>
+  <string id="pause_title">ПАУЗА</string>
+  <string id="pause_continue">ПРОДОЛЖИТЬ</string>
+  <string id="pause_exit">В МЕНЮ</string>
+  <string id="pause_settings">НАСТРОЙКИ</string>
+  <string id="death_title">ТЫ ПОГИБ</string>
+  <string id="death_subtitle">КОРПОРАЦИЯ УЦЕЛЕЛА</string>
+  <string id="death_retry">ЕЩЁ РАЗ</string>
+  <string id="death_menu">ГЛАВНОЕ МЕНЮ</string>
+  <string id="hud_hp">ОЗ: %d / %d</string>
+  <string id="hud_xp">ОП: %d / %d</string>
+  <string id="hud_stat_pts">ОЧКИ: %d</string>
+  <string id="hud_left">ОСТАЛОСЬ: %d</string>
+  <string id="hud_floor">ЭТАЖ %d</string>
+  <string id="hud_ammo">ПАТРОНЫ: %d / %d</string>
+  <string id="hud_tab">[TAB]</string>
+  <string id="weapon_katana">КАТАНА</string>
+  <string id="weapon_pistol">ПИСТОЛЕТ</string>
+  <string id="weapon_shotgun">ДРОБОВИК</string>
+  <string id="weapon_minigun">МИНИГАН</string>
+  <string id="upgrade_title">ЭТАЖ ЗАЧИЩЕН!</string>
+  <string id="upgrade_pick">Выбери одно:</string>
+  <string id="upgrade_floor_cleaned">ЭТАЖ %d ЗАЧИЩЕН - ВЫБЕРИ ОДНО</string>
+  <string id="up_hp">HP +20</string>
+  <string id="up_hp_desc">Увеличивает макс. здоровье на 20</string>
+  <string id="up_speed">Скорость +30</string>
+  <string id="up_speed_desc">Увеличивает скорость передвижения на 30</string>
+  <string id="up_damage">Урон +20%</string>
+  <string id="up_damage_desc">Увеличивает множитель урона на 20%</string>
+  <string id="up_maxhp">МАКС HP +25</string>
+  <string id="up_maxhp_desc">Увеличивает макс. HP на 25 и полностью лечит</string>
+  <string id="up_katana">ДЛИНА КАТАНЫ Ур %d</string>
+  <string id="katana_desc_1">Клинок 64px, взмах быстрее</string>
+  <string id="katana_desc_2">Клинок 72px, взмах быстрее</string>
+  <string id="katana_desc_3">Клинок 80px, дальше достаёт</string>
+  <string id="katana_desc_4">Клинок 88px, самый быстрый взмах</string>
+  <string id="katana_max">МАКС. УРОВЕНЬ</string>
+  <string id="gun_desc_shotgun">Высокий урон, 2 дробины за выстрел</string>
+  <string id="gun_desc_minigun">Сверхскоростной, очереди по 4, держи для стрельбы</string>
+</locale>

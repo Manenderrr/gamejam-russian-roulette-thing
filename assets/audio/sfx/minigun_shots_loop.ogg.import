@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/minigun_shots_loop.ogg-07e884ec73ee4681d04ac2
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

@@ -1,6 +1,12 @@
 extends CharacterBody2D
 class_name Enemy
 
+enum AIType { BLINKY, PINKY, INKY, CLYDE }
+
+@export var aiType: AIType = AIType.BLINKY
+var behavior: GhostBehavior = null
+var player_move_dir: Vector2 = Vector2.UP
+
 @export var max_health: float = 100.0
 @export var move_speed: float = 150.0
 @export var damage: float = 10.0
@@ -31,10 +37,13 @@ var anim_frame: int = 0
 var attack_anim: float = 0.0
 const ATTACK_ANIM_LEN: float = 0.28
 var flash_tween: Tween = null
-# Wall unstuck: sidestep briefly when shoved into a corner.
+# Wall unstuck: back out first, then sidestep when shoved into a corner.
 var stuck_time: float = 0.0
 var sidestep_time: float = 0.0
 var sidestep_dir: float = 1.0
+var backup_time: float = 0.0
+var unstick_stage: int = 2
+var grace_time: float = 0.0
 var path_points := PackedVector2Array()
 var path_index: int = 0
 var repath_timer: float = 0.0
@@ -52,6 +61,8 @@ func _ready() -> void:
 	collision_shape = get_node_or_null("CollisionShape2D") as CollisionShape2D
 	player = get_tree().get_first_node_in_group("player") as Node2D
 	repath_timer = randf() * REPATH_INTERVAL
+	aiType = AIType.values()[randi() % AIType.size()]
+	_make_behavior()
 
 	if sprite == null:
 		sprite = Sprite2D.new()
@@ -71,6 +82,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	attack_timer -= delta
+	_track_player_dir()
 
 	var to_player: Vector2 = player.global_position - global_position
 	var distance: float = to_player.length()
@@ -88,24 +100,45 @@ func _physics_process(delta: float) -> void:
 		attack()
 	elif distance > attack_range:
 		wants_to_move = true
-		if sidestep_time > 0.0:
+		if backup_time > 0.0:
+			backup_time -= delta
+			var back: Vector2 = -direction
+			if velocity.length() > 1.0:
+				back = -velocity.normalized()
+			velocity = back * get_effective_speed() * 0.7
+		elif sidestep_time > 0.0:
 			sidestep_time -= delta
 			var perp := Vector2(-direction.y, direction.x) * sidestep_dir
-			velocity = (direction * 0.4 + perp * 0.9).normalized() * move_speed
+			velocity = (direction * 0.15 + perp * 0.95).normalized() * get_effective_speed()
 		else:
-			velocity = direction * move_speed
+			velocity = direction * get_effective_speed()
 	else:
 		velocity = Vector2.ZERO
 
 	move_and_slide()
 
-	# If we want to move but barely budge, we're wedged: sidestep to unstick.
-	if wants_to_move and velocity.length() < 15.0:
+	# If we want to move but barely budge, we're wedged: back out of the
+	# pocket first, then sidestep along the wall, then repath.
+	if grace_time > 0.0:
+		grace_time -= delta
+		stuck_time = 0.0
+	elif wants_to_move and velocity.length() < 15.0:
 		stuck_time += delta
 		if stuck_time > 0.5:
 			stuck_time = 0.0
-			sidestep_time = 0.6
-			sidestep_dir *= -1.0
+			unstick_stage = (unstick_stage + 1) % 3
+			var fwd: Vector2 = direction
+			if fwd == Vector2.ZERO and velocity.length() > 1.0:
+				fwd = velocity.normalized()
+			if fwd != Vector2.ZERO:
+				var lvl: Node = get_tree().get_first_node_in_group("level")
+				if lvl != null and lvl.has_method("probe_side"):
+					sidestep_dir = float(lvl.call("probe_side", global_position, fwd, sidestep_dir))
+			if unstick_stage == 0:
+				backup_time = 0.3
+			else:
+				sidestep_time = 0.6
+			grace_time = 0.35
 			repath_timer = 0.0
 	else:
 		stuck_time = 0.0
@@ -123,29 +156,73 @@ func _refresh_path() -> void:
 	if player == null or not is_instance_valid(player):
 		return
 	var lvl: Node = get_tree().get_first_node_in_group("level")
-	if lvl != null and lvl.has_method("find_path"):
-		path_points = lvl.call("find_path", global_position, player.global_position)
-		path_points = _simplify_path(path_points)
+	if lvl != null and lvl.has_method("find_smooth_path"):
+		path_points = lvl.call("find_smooth_path", global_position, _behavior_target(), _body_radius())
 
-func _simplify_path(pts: PackedVector2Array) -> PackedVector2Array:
-	# String-pulling: skip to the farthest waypoint with a clear line so
-	# the route cuts corners instead of grinding along every wall.
-	if pts.size() <= 3:
-		return pts
-	var out := PackedVector2Array()
-	var i := 0
-	out.append(pts[0])
-	while i < pts.size() - 1:
-		var j: int = mini(i + 12, pts.size() - 1)
-		while j > i + 1 and not _los_clear(pts[i], pts[j]):
-			j -= 1
-		out.append(pts[j])
-		i = j
-	return out
+func _make_behavior() -> void:
+	match aiType:
+		AIType.BLINKY:
+			behavior = BlinkyBehavior.new()
+		AIType.PINKY:
+			behavior = PinkyBehavior.new()
+		AIType.INKY:
+			behavior = InkyBehavior.new()
+		AIType.CLYDE:
+			behavior = ClydeBehavior.new()
+		_:
+			behavior = BlinkyBehavior.new()
 
-func _los_clear(a: Vector2, b: Vector2) -> bool:
-	var query := PhysicsRayQueryParameters2D.create(a, b, 1)
-	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+func _behavior_target() -> Vector2:
+	if behavior == null:
+		_make_behavior()
+	if player == null or not is_instance_valid(player):
+		return global_position
+	return behavior.get_target(self)
+
+func get_effective_speed() -> float:
+	if behavior == null:
+		_make_behavior()
+	return move_speed * behavior.get_speed_multiplier(self)
+
+func _track_player_dir() -> void:
+	if player == null or not is_instance_valid(player):
+		return
+	var v := Vector2.ZERO
+	if player is CharacterBody2D:
+		v = (player as CharacterBody2D).velocity
+	if v.length() > 20.0:
+		player_move_dir = v.normalized()
+
+func get_player_move_dir() -> Vector2:
+	return player_move_dir
+
+func get_blinky_position() -> Vector2:
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if e == self or not is_instance_valid(e):
+			continue
+		if e is Enemy and (e as Enemy).aiType == AIType.BLINKY:
+			return (e as Node2D).global_position
+	return Vector2.INF
+
+func get_retreat_corner() -> Vector2:
+	var lvl: Node = get_tree().get_first_node_in_group("level")
+	if lvl != null and (lvl as Node).get("map_bounds_px") != null:
+		var bounds: Rect2 = (lvl as Node).get("map_bounds_px")
+		if bounds.size.x > 0.0:
+			var margin: float = 48.0
+			return Vector2(
+				bounds.position.x + margin,
+				bounds.position.y + bounds.size.y - margin)
+	if player != null and is_instance_valid(player):
+		return global_position + (global_position - player.global_position).normalized() * 400.0
+	return global_position + Vector2(-400.0, 400.0)
+
+func _body_radius() -> float:
+	if collision_shape != null and collision_shape.shape is RectangleShape2D:
+		var sz: Vector2 = (collision_shape.shape as RectangleShape2D).size
+		var sc: Vector2 = collision_shape.global_transform.get_scale() if is_inside_tree() else Vector2.ONE
+		return maxf(sz.x * sc.x, sz.y * sc.y) * 0.5
+	return 12.0
 
 func _path_direction() -> Vector2:
 	while path_index < path_points.size():
