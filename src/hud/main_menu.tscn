@@ -1,57 +1,15 @@
-[gd_scene format=4 uid="uid://bvn2k3m5n7p9q"]
+[gd_scene format=3 uid="uid://bvn2k3m5n7qaq"]
 
-[ext_resource type="Script" path="res://src/hud/main_menu.gd" id="1_abcde"]
-[ext_resource type="AudioStream" path="res://assets/audio/music/gamemenu.ogg" id="2_music"]
+[ext_resource type="StyleBox" uid="uid://bnuf8242qrch2" path="res://ui/panels/pink_border_box.tres" id="1_14qnn"]
+[ext_resource type="Script" uid="uid://c02yu8e5e7tbe" path="res://src/hud/main_menu.gd" id="1_abcde"]
+[ext_resource type="AudioStream" uid="uid://bxl15i7uye1in" path="res://assets/audio/music/gamemenu.ogg" id="2_music"]
+[ext_resource type="PackedScene" uid="uid://c44yg3h8pq5pw" path="res://src/level/level.tscn" id="2_x6pyu"]
+[ext_resource type="Texture2D" uid="uid://br0pu7ros2n1g" path="res://assets/gfx/sound_icon.aseprite" id="4_elp1e"]
+[ext_resource type="Script" uid="uid://dtkomsugos2xc" path="res://ui/volume_slider.gd" id="5_wls6m"]
+[ext_resource type="Script" uid="uid://dt2xci0h3rsy5" path="res://ui/format_string_label.gd" id="6_14qnn"]
+[ext_resource type="Texture2D" uid="uid://cjs8fletykw82" path="res://assets/gfx/music_icon.aseprite" id="7_2tdun"]
 
-[sub_resource type="SystemFont" id="Font_mono"]
-font_names = PackedStringArray("monospace")
-
-[sub_resource type="StyleBoxFlat" id="SB_panel"]
-bg_color = Color(0.04, 0.04, 0.07, 0.96)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 0.18, 0.53, 1)
-content_margin_left = 36.0
-content_margin_top = 28.0
-content_margin_right = 36.0
-content_margin_bottom = 28.0
-
-[sub_resource type="StyleBoxFlat" id="SB_btn"]
-bg_color = Color(0.07, 0.07, 0.1, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.92, 0.95, 0.9, 1)
-
-[sub_resource type="StyleBoxFlat" id="SB_btn_hover"]
-bg_color = Color(0.4, 0.07, 0.22, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.18, 0.53, 1)
-
-[sub_resource type="StyleBoxFlat" id="SB_btn_pressed"]
-bg_color = Color(0.05, 0.3, 0.38, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.16, 0.9, 1, 1)
-
-[node name="Control" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_abcde")
-
-[node name="Panel" type="Panel" parent="."]
+[node name="MainMenu" type="PanelContainer" unique_id=526200657]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -59,49 +17,96 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -240.0
 offset_top = -190.0
-offset_right = 240.0
-offset_bottom = 190.0
-theme_override_styles/panel = SubResource("SB_panel")
+offset_right = 144.0
+offset_bottom = 125.0
+theme_override_styles/panel = ExtResource("1_14qnn")
+script = ExtResource("1_abcde")
+level_scene = ExtResource("2_x6pyu")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-theme_override_constants/separation = 18
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=744750937]
+layout_mode = 2
+theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="Panel/VBoxContainer"]
-theme_override_colors/font_color = Color(1, 0.18, 0.53, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 44
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=1481745907]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.19607843, 0.50980395, 1)
+theme_override_font_sizes/font_size = 24
 text = "VAMPIRE
 SURVIVAL"
 horizontal_alignment = 1
 
-[node name="SubTitle" type="Label" parent="Panel/VBoxContainer"]
-theme_override_colors/font_color = Color(0.16, 0.9, 1, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 18
+[node name="SubTitle" type="Label" parent="VBoxContainer" unique_id=889009993]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15686275, 0.9019608, 1, 1)
+theme_override_font_sizes/font_size = 16
 text = "> CLEAN THE FLOORS <"
 horizontal_alignment = 1
 
-[node name="PlayButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="PlayButton" type="Button" parent="VBoxContainer" unique_id=1424727805]
 custom_minimum_size = Vector2(0, 60)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("SB_btn")
-theme_override_styles/hover = SubResource("SB_btn_hover")
-theme_override_styles/pressed = SubResource("SB_btn_pressed")
+layout_mode = 2
 text = "PLAY"
 
-[node name="ExitButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=2046425379]
 custom_minimum_size = Vector2(0, 60)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("SB_btn")
-theme_override_styles/hover = SubResource("SB_btn_hover")
-theme_override_styles/pressed = SubResource("SB_btn_pressed")
+layout_mode = 2
 text = "EXIT"
 
-[node name="Music" type="AudioStreamPlayer" parent="."]
+[node name="VolumeContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=211970562]
+layout_mode = 2
+
+[node name="MainContainer" type="HBoxContainer" parent="VBoxContainer/VolumeContainer" unique_id=1935931304]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=466647911]
+layout_mode = 2
+texture = ExtResource("4_elp1e")
+stretch_mode = 5
+
+[node name="Slider" type="HSlider" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=1656928699]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 200.0
+value = 67.0
+script = ExtResource("5_wls6m")
+bus_name = &"Main"
+
+[node name="Indicator" type="Label" parent="VBoxContainer/VolumeContainer/MainContainer" unique_id=1274904056]
+layout_mode = 2
+text = "670%"
+script = ExtResource("6_14qnn")
+format_string = "%3d%%"
+
+[node name="MusicContainer" type="HBoxContainer" parent="VBoxContainer/VolumeContainer" unique_id=379922623]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=27679969]
+layout_mode = 2
+texture = ExtResource("7_2tdun")
+stretch_mode = 5
+
+[node name="Slider" type="HSlider" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=1273306871]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 200.0
+value = 67.0
+script = ExtResource("5_wls6m")
+bus_name = &"Music"
+
+[node name="Indicator" type="Label" parent="VBoxContainer/VolumeContainer/MusicContainer" unique_id=189000351]
+layout_mode = 2
+text = "670%"
+script = ExtResource("6_14qnn")
+format_string = "%3d%%"
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=949900550]
 stream = ExtResource("2_music")
 autoplay = true
+bus = &"Music"
+
+[connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="begin_game"]
+[connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="quit_game"]
+[connection signal="value_changed" from="VBoxContainer/VolumeContainer/MainContainer/Slider" to="VBoxContainer/VolumeContainer/MainContainer/Indicator" method="update"]
+[connection signal="value_changed" from="VBoxContainer/VolumeContainer/MusicContainer/Slider" to="VBoxContainer/VolumeContainer/MusicContainer/Indicator" method="update"]

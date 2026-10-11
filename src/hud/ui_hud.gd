@@ -1,15 +1,15 @@
 extends CanvasLayer
 class_name UIHUD
 
-@onready var health_bar: ProgressBar = $LeftPanel/VBox/HealthBar
-@onready var health_label: Label = $LeftPanel/VBox/HealthLabel
-@onready var wave_label: Label = $RightPanel/VBox/WaveLabel
-@onready var left_label: Label = $RightPanel/VBox/LeftLabel
-@onready var ammo_label: Label = $LeftPanel/VBox/AmmoLabel
-@onready var xp_bar: ProgressBar = $LeftPanel/VBox/XPBar
-@onready var xp_label: Label = $LeftPanel/VBox/XPLabel
-@onready var weapon_label: Label = $LeftPanel/VBox/WeaponLabel
-@onready var stat_points_label: Label = $LeftPanel/VBox/StatPointsLabel
+@export var health_bar: ProgressBar
+@export var health_label: Label
+@export var wave_label: Label
+@export var left_label: Label
+@export var ammo_label: Label
+@export var xp_bar: ProgressBar
+@export var xp_label: Label
+@export var weapon_label: Label
+@export var stat_points_label: Label
 
 var player = null
 var wave_manager: WaveManager = null

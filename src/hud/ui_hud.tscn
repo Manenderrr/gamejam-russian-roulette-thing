@@ -1,21 +1,7 @@
-[gd_scene format=4 uid="uid://uihud1s2c3e4n"]
+[gd_scene format=3 uid="uid://6gifq7si21ct"]
 
-[ext_resource type="Script" path="res://src/hud/ui_hud.gd" id="1_ui_hud"]
-
-[sub_resource type="SystemFont" id="Font_mono"]
-font_names = PackedStringArray("monospace")
-
-[sub_resource type="StyleBoxFlat" id="SB_panel"]
-bg_color = Color(0.04, 0.04, 0.07, 0.85)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.16, 0.9, 1, 1)
-content_margin_left = 12.0
-content_margin_top = 10.0
-content_margin_right = 12.0
-content_margin_bottom = 10.0
+[ext_resource type="Script" uid="uid://c0rhv0wet72sk" path="res://src/hud/ui_hud.gd" id="1_ui_hud"]
+[ext_resource type="StyleBox" uid="uid://dp7qrk1grvsft" path="res://ui/panels/cyan_border_box.tres" id="2_vkpcy"]
 
 [sub_resource type="StyleBoxFlat" id="SB_bar_bg"]
 bg_color = Color(0.1, 0.1, 0.14, 1)
@@ -26,86 +12,106 @@ bg_color = Color(0.2, 0.9, 0.35, 1)
 [sub_resource type="StyleBoxFlat" id="SB_xp_fill"]
 bg_color = Color(1, 0.85, 0.2, 1)
 
-[node name="CanvasLayer" type="CanvasLayer"]
+[sub_resource type="SystemFont" id="Font_mono"]
+font_names = PackedStringArray("monospace")
+subpixel_positioning = 0
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=921743387 node_paths=PackedStringArray("health_bar", "health_label", "wave_label", "left_label", "ammo_label", "xp_bar", "xp_label", "weapon_label", "stat_points_label")]
 layer = 50
 script = ExtResource("1_ui_hud")
+health_bar = NodePath("MarginContainer/LeftPanel/VBox/HealthBar")
+health_label = NodePath("MarginContainer/LeftPanel/VBox/HealthLabel")
+wave_label = NodePath("MarginContainer2/RightPanel/VBox/WaveLabel")
+left_label = NodePath("MarginContainer2/RightPanel/VBox/LeftLabel")
+ammo_label = NodePath("MarginContainer/LeftPanel/VBox/AmmoLabel")
+xp_bar = NodePath("MarginContainer/LeftPanel/VBox/XPBar")
+xp_label = NodePath("MarginContainer/LeftPanel/VBox/XPLabel")
+weapon_label = NodePath("MarginContainer/LeftPanel/VBox/WeaponLabel")
+stat_points_label = NodePath("MarginContainer/LeftPanel/VBox/StatPointsLabel")
 
-[node name="LeftPanel" type="PanelContainer" parent="."]
-offsets = Rect2(12, 12, 364, 260)
-theme_override_styles/panel = SubResource("SB_panel")
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1471484554]
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
 
-[node name="VBox" type="VBoxContainer" parent="LeftPanel"]
+[node name="LeftPanel" type="PanelContainer" parent="MarginContainer" unique_id=1946149672]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_vkpcy")
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/LeftPanel" unique_id=1658983129]
+layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="HealthLabel" type="Label" parent="LeftPanel/VBox"]
-theme_override_colors/font_color = Color(0.92, 0.95, 0.9, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 22
+[node name="HealthLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=444207488]
+layout_mode = 2
 text = "HP: 100 / 100"
 
-[node name="HealthBar" type="ProgressBar" parent="LeftPanel/VBox"]
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/LeftPanel/VBox" unique_id=1031581830]
 custom_minimum_size = Vector2(300, 16)
-max_value = 100.0
-value = 100.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("SB_bar_bg")
 theme_override_styles/fill = SubResource("SB_hp_fill")
+value = 100.0
+show_percentage = false
 
-[node name="XPLabel" type="Label" parent="LeftPanel/VBox"]
+[node name="XPLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=395570934]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.95, 0.9, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 22
 text = "XP: 0 / 100"
 
-[node name="XPBar" type="ProgressBar" parent="LeftPanel/VBox"]
+[node name="XPBar" type="ProgressBar" parent="MarginContainer/LeftPanel/VBox" unique_id=35322826]
 custom_minimum_size = Vector2(300, 12)
-max_value = 100.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("SB_bar_bg")
 theme_override_styles/fill = SubResource("SB_xp_fill")
+show_percentage = false
 
-[node name="WeaponLabel" type="Label" parent="LeftPanel/VBox"]
+[node name="WeaponLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=364534228]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 20
 text = "KATANA [TAB]"
 
-[node name="AmmoLabel" type="Label" parent="LeftPanel/VBox"]
+[node name="AmmoLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=2130142001]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.95, 0.9, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 20
 text = "AMMO: 30 / 30"
 
-[node name="StatPointsLabel" type="Label" parent="LeftPanel/VBox"]
+[node name="StatPointsLabel" type="Label" parent="MarginContainer/LeftPanel/VBox" unique_id=1809698014]
 visible = false
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.18, 0.53, 1)
 theme_override_fonts/font = SubResource("Font_mono")
 theme_override_font_sizes/font_size = 20
 text = "STAT PTS: 0"
 
-[node name="RightPanel" type="PanelContainer" parent="."]
+[node name="MarginContainer2" type="MarginContainer" parent="." unique_id=276641729]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -284.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = 110.0
-theme_override_styles/panel = SubResource("SB_panel")
+offset_left = -208.0
+offset_bottom = 82.0
+grow_horizontal = 0
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
 
-[node name="VBox" type="VBoxContainer" parent="RightPanel"]
+[node name="RightPanel" type="PanelContainer" parent="MarginContainer2" unique_id=1910330733]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_vkpcy")
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer2/RightPanel" unique_id=1435037710]
+layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="WaveLabel" type="Label" parent="RightPanel/VBox"]
-theme_override_colors/font_color = Color(1, 0.18, 0.53, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 26
+[node name="WaveLabel" type="Label" parent="MarginContainer2/RightPanel/VBox" unique_id=402555341]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.19607843, 0.50980395, 1)
+theme_override_font_sizes/font_size = 24
 text = "FLOOR 1"
 horizontal_alignment = 2
 
-[node name="LeftLabel" type="Label" parent="RightPanel/VBox"]
+[node name="LeftLabel" type="Label" parent="MarginContainer2/RightPanel/VBox" unique_id=1075588693]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.95, 0.9, 1)
-theme_override_fonts/font = SubResource("Font_mono")
-theme_override_font_sizes/font_size = 22
 text = "LEFT: 10"
 horizontal_alignment = 2

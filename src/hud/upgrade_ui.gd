@@ -54,7 +54,6 @@ func show_upgrades(choices: Array[Dictionary], stats: PlayerStats, katana_weapon
 		child.queue_free()
 
 	_make_styles()
-	title.text = "FLOOR CLEAR!"
 	wave_label.text = "FLOOR %d CLEANED - PICK ONE" % current_wave_num
 
 	for choice in pending_choices:

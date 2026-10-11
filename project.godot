@@ -15,6 +15,10 @@ run/main_scene="res://src/hud/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://assets/icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://clcthjklips3e"
+
 [autoload]
 
 GameManager="*res://src/game_manager.gd"
@@ -34,6 +38,8 @@ enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addon
 [gui]
 
 theme/default_font_antialiasing=0
+theme/custom="uid://tieac26y4pa0"
+theme/custom_font="uid://v3w5ujou53aj"
 
 [input]
 
