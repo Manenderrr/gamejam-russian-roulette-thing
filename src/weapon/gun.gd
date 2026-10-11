@@ -11,6 +11,7 @@ const TIER_BULLETS: Array[Texture2D] = [
 	preload("res://assets/gfx/weapon/minigun/minigun_bullet.png"),
 ]
 const TIER_BULLET_SCALE: Array[float] = [0.5, 1.5, 0.5]
+const TIER_SFX: Array[String] = ["shot", "shotgun_shot", "minigun_loop"]
 
 var tier := 0
 var current_ammo: int = 30
@@ -23,6 +24,9 @@ var bullet_speed: float = 950.0
 var spread: float = 0.1
 var pellets: int = 1
 var max_ammo: int = 30
+
+# Minigun hold-to-fire state
+var is_firing: bool = false
 
 func _init() -> void:
 	weapon_name = "Pistol"
@@ -51,11 +55,11 @@ func _apply_tier() -> void:
 		_:
 			weapon_name = "Minigun"
 			base_damage = 9.0
-			fire_rate = 0.09
-			pellets = 3
-			spread = 0.16
-			bullet_speed = 1100.0
-			max_ammo = 150
+			fire_rate = 0.05
+			pellets = 4
+			spread = 0.18
+			bullet_speed = 1200.0
+			max_ammo = 200
 	current_ammo = max_ammo
 
 func can_tier_up() -> bool:
@@ -74,9 +78,15 @@ func tier_up_description() -> String:
 		1:
 			return "High damage, 2 pellets per shot"
 		_:
-			return "Ultrafast, 3-bullet bursts"
+			return "Ultrafast, 4-bullet bursts, hold to spray"
 
-func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vector2, damage_mult: float, _wielder: Node2D = null) -> bool:
+func start_firing() -> void:
+	is_firing = true
+
+func stop_firing() -> void:
+	is_firing = false
+
+func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vector2, damage_mult: float, wielder: Node2D = null) -> bool:
 	var current_time: float = Time.get_ticks_msec() / 1000.0
 	if current_time - last_shot_time < fire_rate:
 		return false
@@ -109,6 +119,15 @@ func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vect
 		bullet.set_bullet_velocity(Vector2(cos(actual_angle), sin(actual_angle)) * bullet_speed)
 		bullet.set_damage(get_damage(damage_mult))
 		fired = true
+	
+	# Play tier-specific sound
+	if wielder != null and wielder.has_method("get_tree"):
+		var tree := wielder.get_tree()
+		if tree != null and tree.has_method("get_node_or_null"):
+			var gm: Node = tree.get_node_or_null("/root/GameManager")
+			if gm != null and gm.has_method("play_sfx"):
+				gm.call("play_sfx", TIER_SFX[tier])
+	
 	return fired
 
 func add_ammo(amount: int) -> void:

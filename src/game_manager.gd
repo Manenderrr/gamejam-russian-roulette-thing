@@ -15,6 +15,9 @@ const SFX: Dictionary = {
 	"take": preload("res://assets/audio/sfx/xp_take.ogg"),
 	"window": preload("res://assets/audio/sfx/window_appear.ogg"),
 	"select": preload("res://assets/audio/sfx/menu_select.ogg"),
+	"shotgun_shot": preload("res://assets/audio/sfx/shotgun_shot.ogg"),
+	"shotgun_pump": preload("res://assets/audio/sfx/shotgun_pump.ogg"),
+	"minigun_loop": preload("res://assets/audio/sfx/minigun_shots_loop.ogg"),
 }
 const SFX_POOL := 8
 var sfx_players: Array[AudioStreamPlayer] = []

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://j3ae61jkgku5"
+path="res://.godot/imported/ground_texture.aseprite-6979e809b0c7db43038d0b180fbc2ec3.res"
+
+[deps]
+
+source_file="res://assets/gfx/ground_bg/ground_texture.aseprite"
+dest_files=["res://.godot/imported/ground_texture.aseprite-6979e809b0c7db43038d0b180fbc2ec3.res"]
+
+[params]
+

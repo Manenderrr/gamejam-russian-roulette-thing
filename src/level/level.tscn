@@ -24,6 +24,11 @@ script = ExtResource("1_level")
 texture_filter = 1
 tile_set = ExtResource("5_tileset")
 
+[node name="BGTileMapLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = ExtResource("5_tileset")
+z_index = -10
+
 [node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
 motion_mode = 1
 collision_layer = 2

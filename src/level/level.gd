@@ -3,8 +3,10 @@ class_name GameLevel
 
 const TILE: int = 16
 const WALL_CELL := Vector2i(4, 0)
+const GROUND_TEX: Texture2D = preload("res://assets/gfx/ground_bg/ground_texture.png")
 
 @onready var tile_map: TileMapLayer = $TileMapLayer
+@onready var bg_tile_map: TileMapLayer = $BGTileMapLayer
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Camera2D
 @onready var pause_menu: CanvasLayer = $PauseMenu
@@ -125,6 +127,11 @@ func _build_floor(wave_number: int) -> void:
 	#	tile_map.set_cell(Vector2i(map_w + 2, y), 0, WALL_CELL)
 
 	BetterTerrain.update_terrain_area(tile_map, Rect2i(0, 0, map_w, map_h), false)
+
+	# Fill background with ground texture (32px tile, so 2x2 cells per tile map cell)
+	for x in range(-2, map_w + 2):
+		for y in range(-2, map_h + 2):
+			bg_tile_map.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 
 	_place_furniture_pass(floor_set, corridor_set, rooms, wave_number, map_w, map_h)
 	_place_deco_pass(floor_set, map_w, map_h)
@@ -259,7 +266,7 @@ func _is_solid_wall(c: Vector2i, floor_set: Dictionary, map_w: int, map_h: int) 
 		return false
 	return tile_map.get_cell_source_id(c) != -1
 
-func _place_furniture_pass(floor_set: Dictionary, corridor_set: Dictionary, rooms: Array, wave_number: int, map_w: int, map_h: int) -> void:
+func _place_furniture_pass(floor_set: Dictionary, corridor_set: Dictionary, rooms: Array, _wave_number: int, map_w: int, map_h: int) -> void:
 	if rooms.is_empty():
 		return
 	var rng := RandomNumberGenerator.new()
@@ -328,9 +335,10 @@ func _place_furniture_pass(floor_set: Dictionary, corridor_set: Dictionary, room
 			_place_deco(wc, FURN_DOOR, used)
 
 func _place_deco_pass(floor_set: Dictionary, map_w: int, map_h: int) -> void:
-	# Wall dressing from the tileset list: windows, vents, doors and red
-	# accents on real painted walls that face a room. Runs after the
-	# terrain update so the autotiler never overwrites them.
+	# Wall dressing from the tileset list, matched to the wall run:
+	# horizontal grates only on horizontal runs, the tall window only on
+	# vertical runs, never on single-cell nubs. Runs after the terrain
+	# update so the autotiler never overwrites them.
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	for cell in floor_set:
@@ -341,16 +349,31 @@ func _place_deco_pass(floor_set: Dictionary, map_w: int, map_h: int) -> void:
 				continue
 			if tile_map.get_cell_source_id(w) == -1:
 				continue
+			var run_e: bool = _is_solid_wall(w + Vector2i(1, 0), floor_set, map_w, map_h)
+			var run_w: bool = _is_solid_wall(w + Vector2i(-1, 0), floor_set, map_w, map_h)
+			var run_n: bool = _is_solid_wall(w + Vector2i(0, -1), floor_set, map_w, map_h)
+			var run_s: bool = _is_solid_wall(w + Vector2i(0, 1), floor_set, map_w, map_h)
+			var horiz: bool = run_e or run_w
+			var vert: bool = run_n or run_s
+			if not horiz and not vert:
+				continue
+			var f_n: bool = floor_set.has(w + Vector2i(0, -1))
+			var f_s: bool = floor_set.has(w + Vector2i(0, 1))
+			var f_e: bool = floor_set.has(w + Vector2i(1, 0))
+			var f_w: bool = floor_set.has(w + Vector2i(-1, 0))
 			var roll: float = rng.randf()
-			var south_floor: bool = floor_set.has(w + Vector2i(0, 1))
-			if roll < 0.025 and south_floor:
-				tile_map.set_cell(w, 0, Vector2i(DECO_DOOR, 0))
-			elif roll < 0.09 and (south_floor or floor_set.has(w + Vector2i(1, 0))):
-				tile_map.set_cell(w, 0, Vector2i(DECO_WINDOW, 0))
-			elif roll < 0.15:
-				tile_map.set_cell(w, 0, Vector2i(DECO_VENTS[rng.randi() % DECO_VENTS.size()], 0))
-			elif roll < 0.19:
-				tile_map.set_cell(w, 0, Vector2i(DECO_MISC[rng.randi() % DECO_MISC.size()], 0))
+			if horiz and (f_n or f_s):
+				if roll < 0.025 and f_s:
+					tile_map.set_cell(w, 0, Vector2i(DECO_DOOR, 0))
+				elif roll < 0.09:
+					tile_map.set_cell(w, 0, Vector2i(DECO_VENTS[rng.randi() % DECO_VENTS.size()], 0))
+				elif roll < 0.13:
+					tile_map.set_cell(w, 0, Vector2i(DECO_MISC[rng.randi() % DECO_MISC.size()], 0))
+			elif vert and not horiz and (f_e or f_w):
+				if roll < 0.09:
+					tile_map.set_cell(w, 0, Vector2i(DECO_WINDOW, 0))
+				elif roll < 0.13:
+					tile_map.set_cell(w, 0, Vector2i(DECO_MISC[rng.randi() % DECO_MISC.size()], 0))
 
 func _in_map(c: Vector2i, map_w: int, map_h: int) -> bool:
 	return c.x >= 0 and c.y >= 0 and c.x < map_w and c.y < map_h

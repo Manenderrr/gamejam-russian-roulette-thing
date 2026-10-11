@@ -58,7 +58,7 @@ func _carve_room(room: Rect2i) -> void:
 			floors[Vector2i(x, y)] = true
 
 func _room_center(room: Rect2i) -> Vector2i:
-	return Vector2i(room.position.x + room.size.x / 2, room.position.y + room.size.y / 2)
+	return Vector2i(room.position.x + room.size.x / 2.0, room.position.y + room.size.y / 2.0)
 
 func _carve_corridor(from: Vector2i, to: Vector2i) -> void:
 	# 3-wide tunnels: roomy enough for the player and enemies to pass.

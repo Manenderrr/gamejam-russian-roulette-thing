@@ -61,9 +61,15 @@ func _physics_process(delta: float) -> void:
 	_handle_rotation()
 	_handle_dash()
 	_update_animation(delta)
+	_handle_minigun_autofire(delta)
 
 	if dash_cooldown > 0.0:
 		dash_cooldown -= delta
+
+func _handle_minigun_autofire(_delta: float) -> void:
+	if gun != null and gun.tier == 2 and gun.is_firing:
+		var mouse_pos: Vector2 = get_global_mouse_position()
+		gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self)
 
 func _update_animation(delta: float) -> void:
 	if sprite == null:
@@ -114,8 +120,14 @@ func _handle_dash() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("melee") and current_weapon == "katana":
 		_attack_katana()
-	elif event.is_action_pressed("shoot") and current_weapon == "pistol":
+	elif event.is_action_pressed("shoot") and current_weapon in ["pistol", "shotgun"]:
 		_attack_gun()
+	elif event.is_action_pressed("shoot") and current_weapon == "minigun":
+		if gun != null:
+			gun.start_firing()
+	elif event.is_action_released("shoot") and current_weapon == "minigun":
+		if gun != null:
+			gun.stop_firing()
 	elif event.is_action_pressed("switch_weapon"):
 		_switch_weapon()
 
@@ -142,14 +154,26 @@ func _attack_gun() -> void:
 		return
 	shoot_anim = SHOOT_ANIM_LEN
 	var mouse_pos: Vector2 = get_global_mouse_position()
-	if gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier):
-		GameManager.play_sfx("shot")
+	gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self)
 
 func _switch_weapon() -> void:
-	if current_weapon == "katana":
-		current_weapon = "pistol"
-	else:
-		current_weapon = "katana"
+	match current_weapon:
+		"katana":
+			current_weapon = "pistol"
+		"pistol":
+			if gun != null and gun.tier >= 1:
+				current_weapon = "shotgun"
+			else:
+				current_weapon = "katana"
+		"shotgun":
+			if gun != null and gun.tier >= 2:
+				current_weapon = "minigun"
+			else:
+				current_weapon = "katana"
+		"minigun":
+			current_weapon = "katana"
+		_:
+			current_weapon = "katana"
 	print("Switched to: ", current_weapon)
 
 func take_damage(amount: float) -> void:
