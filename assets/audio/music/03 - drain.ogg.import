@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ba0cwxx8tmtrm"
+path="res://.godot/imported/03 - drain.ogg-0bdf101180ffa9beeed97bb953ad4b3c.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/music/03 - drain.ogg"
+dest_files=["res://.godot/imported/03 - drain.ogg-0bdf101180ffa9beeed97bb953ad4b3c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -13,6 +13,7 @@ const ATTACK_FRAMES: Array[Texture2D] = [
 	preload("res://assets/gfx/enemy/office_plankton/frames/office_plankton_attack2.webp"),
 	preload("res://assets/gfx/enemy/office_plankton/frames/office_plankton_attack3.webp"),
 ]
+const CORPSE: Texture2D = preload("res://assets/gfx/enemy/office_plankton/frames/office_plankton_dead_body.webp")
 
 func _ready() -> void:
 	max_health = 50.0
@@ -26,5 +27,6 @@ func _ready() -> void:
 	idle_textures = IDLE_FRAMES.duplicate()
 	walk_textures = WALK_FRAMES.duplicate()
 	attack_textures = ATTACK_FRAMES.duplicate()
+	corpse_texture = CORPSE
 	anim_fps = 7.0
 	super._ready()

@@ -13,22 +13,23 @@ const ATTACK_FRAMES: Array[Texture2D] = [
 	preload("res://assets/gfx/enemy/boss/boss_attack_2.webp"),
 	preload("res://assets/gfx/enemy/boss/boss_attack_3.webp"),
 ]
+const CORPSE: Texture2D = preload("res://assets/gfx/enemy/boss/boss_dead_body.webp")
 
 @export var phase2_health_threshold: float = 0.5
 @export var minion_scene: PackedScene
-@export var spawn_cooldown: float = 5.0
+@export var spawn_cooldown: float = 4.5
 
 var spawn_timer: float = 0.0
 var in_phase2: bool = false
 
 func _ready() -> void:
-	max_health = 500.0
-	move_speed = 80.0
-	damage = 30.0
+	max_health = 1800.0
+	move_speed = 105.0
+	damage = 45.0
 	detection_range = 600.0
 	attack_range = 80.0
-	attack_cooldown = 2.0
-	xp_reward = 100
+	attack_cooldown = 1.4
+	xp_reward = 250
 	ammo_reward = 30
 	heal_reward = 40
 	heal_chance = 0.6
@@ -37,12 +38,14 @@ func _ready() -> void:
 	idle_textures = IDLE_FRAMES.duplicate()
 	walk_textures = WALK_FRAMES.duplicate()
 	attack_textures = ATTACK_FRAMES.duplicate()
+	corpse_texture = CORPSE
+	corpse_scale = Vector2(2.0, 2.0)
 	super._ready()
 
 	if sprite != null:
 		sprite.scale = Vector2(2.0, 2.0)
 	if collision_shape != null:
-		collision_shape.scale = Vector2(2.0, 2.0)
+		collision_shape.scale = Vector2(1.3, 1.3)
 
 func _physics_process(delta: float) -> void:
 	spawn_timer -= delta
@@ -58,20 +61,20 @@ func enter_phase2() -> void:
 	if in_phase2:
 		return
 	in_phase2 = true
-	move_speed = 120.0
-	attack_cooldown = 1.0
+	move_speed = 150.0
+	attack_cooldown = 0.7
 	# No permanent tint: boss flashes red on hits like everything else.
 
 func spawn_minions() -> void:
 	spawn_timer = spawn_cooldown
 	var lvl: Node = get_tree().get_first_node_in_group("level")
 	var home: Node = lvl if lvl != null else get_tree().root
-	for i in range(3):
+	for i in range(4):
 		var minion: Node2D = minion_scene.instantiate() as Node2D
 		if minion == null:
 			continue
 		home.add_child(minion)
-		var angle: float = (float(i) / 3.0) * TAU + randf() * 0.6
+		var angle: float = (float(i) / 4.0) * TAU + randf() * 0.6
 		var want: Vector2 = global_position + Vector2(cos(angle), sin(angle)) * 100.0
 		if lvl != null and lvl.has_method("snap_to_floor"):
 			minion.global_position = lvl.call("snap_to_floor", want)

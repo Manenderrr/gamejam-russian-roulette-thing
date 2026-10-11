@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://xp4ljghoioog"
+path="res://.godot/imported/04 - ayounemd.ogg-0a7e082744d76212d227bd1b91fe212c.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/music/04 - ayounemd.ogg"
+dest_files=["res://.godot/imported/04 - ayounemd.ogg-0a7e082744d76212d227bd1b91fe212c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

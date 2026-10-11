@@ -13,6 +13,7 @@ var player_stats: PlayerStats
 var katana: Weapon
 var gun: Weapon
 var current_wave_num: int = 1
+var accept_input_after: float = 0.0
 
 func _ready() -> void:
 	# UI must keep processing input while the tree is paused.
@@ -45,6 +46,9 @@ func show_upgrades(choices: Array[Dictionary], stats: PlayerStats, katana_weapon
 	visible = true
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	# Ignore the clicks that cleared the floor: the player is still firing.
+	accept_input_after = Time.get_ticks_msec() / 1000.0 + 0.5
+	GameManager.play_sfx("window")
 
 func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 	var filtered: Array[Dictionary] = []
@@ -57,6 +61,15 @@ func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 			"bonus": "katana",
 			"text": "KATANA LENGTH Lv " + str(katana.level + 1),
 			"description": katana.get_upgrade_description()
+		})
+
+	# Wave-clear reward (free): evolve the pistol while climbing floors.
+	if gun != null and gun is Gun and (gun as Gun).can_tier_up() and _tier_unlocked((gun as Gun).tier + 1):
+		available_choices.append({
+			"type": "bonus",
+			"bonus": "gun",
+			"text": (gun as Gun).tier_up_name().to_upper(),
+			"description": (gun as Gun).tier_up_description()
 		})
 
 	# Wave-clear reward (free): more max HP.
@@ -72,13 +85,6 @@ func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 		for choice in base_choices:
 			if String(choice.get("type", "")) == "stat":
 				available_choices.append(choice)
-		if gun != null and gun.can_upgrade():
-			available_choices.append({
-				"type": "weapon",
-				"weapon": "gun",
-				"text": "Gun " + str(gun.level + 1),
-				"description": gun.get_upgrade_description()
-			})
 
 	# Pick up to 3 choices, always keeping the free wave rewards first.
 	var shuffled: Array[Dictionary] = available_choices.duplicate()
@@ -96,7 +102,15 @@ func _filter_choices(base_choices: Array[Dictionary]) -> Array[Dictionary]:
 
 	return filtered
 
+func _tier_unlocked(next_tier: int) -> bool:
+	if next_tier <= 1:
+		return current_wave_num >= 2
+	return current_wave_num >= 4
+
 func _on_choice_selected(choice: Dictionary) -> void:
+	if Time.get_ticks_msec() / 1000.0 < accept_input_after:
+		return
+	GameManager.play_sfx("select")
 	upgrade_selected.emit(choice)
 	_hide_ui()
 

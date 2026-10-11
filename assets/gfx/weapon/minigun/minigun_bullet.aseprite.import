@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://y8k7r2foanxp"
+path="res://.godot/imported/minigun_bullet.aseprite-ad663037facb9afc9186e3be5b93dd3b.res"
+
+[deps]
+
+source_file="res://assets/gfx/weapon/minigun/minigun_bullet.aseprite"
+dest_files=["res://.godot/imported/minigun_bullet.aseprite-ad663037facb9afc9186e3be5b93dd3b.res"]
+
+[params]
+

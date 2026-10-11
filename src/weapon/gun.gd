@@ -1,74 +1,118 @@
 extends Weapon
 class_name Gun
 
-@export var max_ammo: int = 30
-@export var fire_rate: float = 0.3
-@export var bullet_speed: float = 950.0
-@export var bullet_scene: PackedScene
-@export var spread: float = 0.1
+# Gun evolution: Pistol -> Shotgun -> Minigun. Tier-ups swap the whole
+# package (damage, rate, pellets, mag, bullet art); no stat levels.
+const TIER_NAMES: Array[String] = ["Pistol", "Shotgun", "Minigun"]
+const TIER_MAX := 2
+const TIER_BULLETS: Array[Texture2D] = [
+	preload("res://assets/gfx/weapon/gun/bullet.png"),
+	preload("res://assets/gfx/weapon/shotgun/shotgun_bullet.png"),
+	preload("res://assets/gfx/weapon/minigun/minigun_bullet.png"),
+]
+const TIER_BULLET_SCALE: Array[float] = [0.5, 1.5, 0.5]
 
+var tier := 0
 var current_ammo: int = 30
 var last_shot_time: float = 0.0
+
+@export var bullet_scene: PackedScene
+
+var fire_rate: float = 0.3
+var bullet_speed: float = 950.0
+var spread: float = 0.1
+var pellets: int = 1
+var max_ammo: int = 30
 
 func _init() -> void:
 	weapon_name = "Pistol"
 	base_damage = 15.0
 	max_level = 5
+	_apply_tier()
+
+func _apply_tier() -> void:
+	match tier:
+		0:
+			weapon_name = "Pistol"
+			base_damage = 15.0
+			fire_rate = 0.3
+			pellets = 1
+			spread = 0.1
+			bullet_speed = 950.0
+			max_ammo = 30
+		1:
+			weapon_name = "Shotgun"
+			base_damage = 25.0
+			fire_rate = 0.9
+			pellets = 2
+			spread = 0.14
+			bullet_speed = 800.0
+			max_ammo = 12
+		_:
+			weapon_name = "Minigun"
+			base_damage = 9.0
+			fire_rate = 0.09
+			pellets = 3
+			spread = 0.16
+			bullet_speed = 1100.0
+			max_ammo = 150
 	current_ammo = max_ammo
 
-func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vector2, damage_mult: float, _wielder: Node2D = null) -> void:
+func can_tier_up() -> bool:
+	return tier < TIER_MAX
+
+func upgrade_tier() -> void:
+	if can_tier_up():
+		tier += 1
+		_apply_tier()
+
+func tier_up_name() -> String:
+	return TIER_NAMES[clampi(tier + 1, 0, TIER_MAX)]
+
+func tier_up_description() -> String:
+	match tier + 1:
+		1:
+			return "High damage, 2 pellets per shot"
+		_:
+			return "Ultrafast, 3-bullet bursts"
+
+func attack(spawn_root: Node, player_global_pos: Vector2, mouse_global_pos: Vector2, damage_mult: float, _wielder: Node2D = null) -> bool:
 	var current_time: float = Time.get_ticks_msec() / 1000.0
 	if current_time - last_shot_time < fire_rate:
-		return
+		return false
 	if current_ammo <= 0:
-		return
+		return false
 
 	last_shot_time = current_time
 	current_ammo -= 1
 
 	if mouse_global_pos == player_global_pos:
-		return
+		return false
 	var direction: Vector2 = (mouse_global_pos - player_global_pos).normalized()
 	var base_angle: float = direction.angle()
-	var actual_angle: float = base_angle + randf_range(-spread, spread)
 
-	if bullet_scene and is_instance_valid(spawn_root):
+	if bullet_scene == null or not is_instance_valid(spawn_root):
+		return false
+	var fired := false
+	for i in range(pellets):
+		var actual_angle: float = base_angle + randf_range(-spread, spread)
 		var bullet: Bullet = bullet_scene.instantiate() as Bullet
 		if bullet == null:
-			return
+			continue
 		spawn_root.add_child(bullet)
 		# Muzzle offset so the bullet never starts inside the shooter.
 		var muzzle: Vector2 = player_global_pos + Vector2(cos(actual_angle), sin(actual_angle)) * 26.0
 		bullet.global_position = muzzle
 		bullet.rotation = actual_angle
 		bullet.set_hostile(false)
+		bullet.set_bullet_texture(TIER_BULLETS[tier], TIER_BULLET_SCALE[tier])
 		bullet.set_bullet_velocity(Vector2(cos(actual_angle), sin(actual_angle)) * bullet_speed)
 		bullet.set_damage(get_damage(damage_mult))
+		fired = true
+	return fired
 
 func add_ammo(amount: int) -> void:
 	current_ammo = mini(current_ammo + amount, max_ammo)
 
 func get_upgrade_description() -> String:
-	match level:
-		1:
-			return "Level 2: +50% damage, larger mag"
-		2:
-			return "Level 3: +50% damage, faster fire rate"
-		3:
-			return "Level 4: +50% damage, less spread"
-		4:
-			return "Level 5: +50% damage, piercing shots"
-		_:
-			return "MAX LEVEL"
-
-func _apply_upgrade() -> void:
-	match level:
-		2:
-			max_ammo = 40
-			current_ammo = max_ammo
-		3:
-			fire_rate = 0.2
-		4:
-			spread = 0.05
-		5:
-			spread = 0.0
+	return tier_up_description()

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://don2b08eid4s3"
+path="res://.godot/imported/07 - goresinn.ogg-71fdab13dbb0ef62fedf4048497b3781.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/music/07 - goresinn.ogg"
+dest_files=["res://.godot/imported/07 - goresinn.ogg-71fdab13dbb0ef62fedf4048497b3781.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

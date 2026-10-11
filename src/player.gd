@@ -8,11 +8,23 @@ const TEX_SHOOT: Array[Texture2D] = [
 	preload("res://assets/gfx/player/shoot_2.webp"),
 	preload("res://assets/gfx/player/shoot_3.webp"),
 ]
+const TEX_IDLE_SHOTGUN: Texture2D = preload("res://assets/gfx/player/idle_shotgun.webp")
+const TEX_WALK_SHOTGUN: Texture2D = preload("res://assets/gfx/player/walk_1_shotgun.webp")
+const TEX_SHOOT_SHOTGUN: Array[Texture2D] = [
+	preload("res://assets/gfx/player/shotgun_attack1.webp"),
+	preload("res://assets/gfx/player/shotgun_attack2.webp"),
+]
+const TEX_IDLE_MINIGUN: Texture2D = preload("res://assets/gfx/player/minigun_idle.webp")
+const TEX_WALK_MINIGUN: Texture2D = preload("res://assets/gfx/player/walk_1_minigun.webp")
+const TEX_SHOOT_MINIGUN: Array[Texture2D] = [
+	preload("res://assets/gfx/player/minigun_attack1.webp"),
+	preload("res://assets/gfx/player/minigun_attack2.webp"),
+]
 const SHOOT_ANIM_LEN: float = 0.18
 
 @export var stats: PlayerStats
 @export var katana: Weapon
-@export var gun: Weapon
+@export var gun: Gun
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var melee_collision: ShapeCast2D = $MeleeCollision
@@ -58,15 +70,28 @@ func _update_animation(delta: float) -> void:
 		return
 	shoot_anim -= delta
 	swing_anim -= delta
-	if shoot_anim > 0.0:
-		var idx: int = clampi(int((SHOOT_ANIM_LEN - shoot_anim) / 0.06), 0, TEX_SHOOT.size() - 1)
-		sprite.texture = TEX_SHOOT[idx]
+	var tier: int = gun.tier if gun != null else 0
+	var idle_tex: Texture2D = TEX_IDLE
+	var walk_tex: Texture2D = TEX_WALK
+	var shoot_tex: Array[Texture2D] = TEX_SHOOT
+	match tier:
+		1:
+			idle_tex = TEX_IDLE_SHOTGUN
+			walk_tex = TEX_WALK_SHOTGUN
+			shoot_tex = TEX_SHOOT_SHOTGUN
+		2:
+			idle_tex = TEX_IDLE_MINIGUN
+			walk_tex = TEX_WALK_MINIGUN
+			shoot_tex = TEX_SHOOT_MINIGUN
+	if shoot_anim > 0.0 and shoot_tex.size() > 0:
+		var idx: int = clampi(int((SHOOT_ANIM_LEN - shoot_anim) / (SHOOT_ANIM_LEN / float(shoot_tex.size()))), 0, shoot_tex.size() - 1)
+		sprite.texture = shoot_tex[idx]
 	elif swing_anim > 0.0:
-		sprite.texture = TEX_WALK
+		sprite.texture = walk_tex
 	elif velocity.length() > 10.0:
-		sprite.texture = TEX_WALK
+		sprite.texture = walk_tex
 	else:
-		sprite.texture = TEX_IDLE
+		sprite.texture = idle_tex
 
 func _handle_movement() -> void:
 	var direction: Vector2 = Input.get_vector("go_left", "go_right", "go_up", "go_down")
@@ -89,7 +114,7 @@ func _handle_dash() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("melee") and current_weapon == "katana":
 		_attack_katana()
-	elif event.is_action_pressed("shoot") and current_weapon == "gun":
+	elif event.is_action_pressed("shoot") and current_weapon == "pistol":
 		_attack_gun()
 	elif event.is_action_pressed("switch_weapon"):
 		_switch_weapon()
@@ -103,7 +128,8 @@ func _attack_katana() -> void:
 		melee_collision.force_shapecast_update()
 
 	var mouse_pos: Vector2 = get_global_mouse_position()
-	katana.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self)
+	if katana.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier, self):
+		GameManager.play_sfx("sweep")
 
 	call_deferred("_disable_melee")
 
@@ -116,11 +142,12 @@ func _attack_gun() -> void:
 		return
 	shoot_anim = SHOOT_ANIM_LEN
 	var mouse_pos: Vector2 = get_global_mouse_position()
-	gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier)
+	if gun.attack(get_tree().root, global_position, mouse_pos, stats.damage_multiplier):
+		GameManager.play_sfx("shot")
 
 func _switch_weapon() -> void:
 	if current_weapon == "katana":
-		current_weapon = "gun"
+		current_weapon = "pistol"
 	else:
 		current_weapon = "katana"
 	print("Switched to: ", current_weapon)
@@ -163,6 +190,7 @@ func add_xp(amount: int) -> void:
 func add_ammo(amount: int) -> void:
 	if gun != null:
 		gun.add_ammo(amount)
+		GameManager.play_sfx("reload")
 
 func upgrade_stat(stat_name: String) -> void:
 	if stats == null:
@@ -183,6 +211,6 @@ func upgrade_katana() -> void:
 	if katana != null:
 		katana.upgrade()
 
-func upgrade_gun() -> void:
+func upgrade_gun_tier() -> void:
 	if gun != null:
-		gun.upgrade()
+		gun.upgrade_tier()

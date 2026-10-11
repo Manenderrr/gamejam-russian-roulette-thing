@@ -14,13 +14,16 @@ func show_pause() -> void:
 	visible = true
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	GameManager.play_sfx("window")
 
 func _on_continue_pressed() -> void:
+	GameManager.play_sfx("select")
 	visible = false
 	get_tree().paused = false
 	# This game aims with a visible cursor: captured mode would hide it.
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _on_exit_pressed() -> void:
+	GameManager.play_sfx("select")
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://src/hud/main_menu.tscn")

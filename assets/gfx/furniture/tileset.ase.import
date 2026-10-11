@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://c32p2aij0uo5h"
+path="res://.godot/imported/tileset.ase-262ee550770fa1a98786833a58254d9c.res"
+
+[deps]
+
+source_file="res://assets/gfx/furniture/tileset.ase"
+dest_files=["res://.godot/imported/tileset.ase-262ee550770fa1a98786833a58254d9c.res"]
+
+[params]
+

@@ -8,7 +8,36 @@ class_name SlashEffect
 @export var damage: float = 25.0
 @export var lifetime: float = 0.22
 @export var swing_half_angle: float = 0.7853982 # 45 degrees each side = 90 total
-@export var blade_offset: float = 30.0
+@export var blade_offset: float = 12.0
+
+# Blade art is drawn diagonal (hilt bottom-right, tip top-left): rotate it
+# onto the strike axis (-Y) and anchor the hilt at the wielder's hand.
+const BLADE_ART_ANGLE := 0.66
+const BLADE_ART_HILT := Vector2(18.0, 24.0)
+
+const STRIKE_FRAMES: Array[Texture2D] = [
+	preload("res://assets/gfx/animation/katana strike/strike_0.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_1.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_2.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_3.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_4.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_5.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_6.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_7.png"),
+	preload("res://assets/gfx/animation/katana strike/strike_8.png"),
+]
+const STRIKE_FPS: float = 45.0
+static var strike_cache: SpriteFrames = null
+
+static func get_strike_frames() -> SpriteFrames:
+	if strike_cache == null:
+		strike_cache = SpriteFrames.new()
+		strike_cache.add_animation("strike")
+		strike_cache.set_animation_speed("strike", STRIKE_FPS)
+		strike_cache.set_animation_loop("strike", false)
+		for tex in STRIKE_FRAMES:
+			strike_cache.add_frame("strike", tex)
+	return strike_cache
 
 var timer: float = 0.0
 var base_rotation: float = 0.0
@@ -41,7 +70,7 @@ func _ready() -> void:
 	area_entered.connect(_on_area_entered)
 	body_entered.connect(_on_body_entered)
 
-func setup(blade_texture: Texture2D, length: float, dmg: float, blade_level: int = 1, follow_target: Node2D = null) -> void:
+func setup(blade_texture: Texture2D, length: float, dmg: float, _blade_level: int = 1, follow_target: Node2D = null) -> void:
 	damage = dmg
 	blade_length = length
 	follow = follow_target
@@ -50,8 +79,9 @@ func setup(blade_texture: Texture2D, length: float, dmg: float, blade_level: int
 	rotation = base_rotation - swing_half_angle
 	timer = lifetime
 
-	# Compact visual: grows only slightly with level, stays near the player.
-	visual_scale = 0.8 + 0.1 * float(clampi(blade_level, 1, 5))
+	# Compact visual: scaled so the art spans the real blade reach.
+	visual_scale = blade_length / 64.0
+	arc_width = blade_length * 0.9
 
 	if collision_shape != null:
 		var rect := RectangleShape2D.new()
@@ -62,10 +92,20 @@ func setup(blade_texture: Texture2D, length: float, dmg: float, blade_level: int
 	if sprite != null:
 		if blade_texture != null:
 			sprite.texture = blade_texture
-		sprite.position = Vector2(0, -blade_offset)
+		sprite.rotation = BLADE_ART_ANGLE
+		sprite.position = Vector2(0, -blade_offset) - BLADE_ART_HILT.rotated(BLADE_ART_ANGLE) * visual_scale
 		sprite.scale = Vector2(visual_scale, visual_scale)
-		sprite.rotation = 0.0
 		sprite.modulate = Color(1, 1, 1, 1)
+
+	var flash := AnimatedSprite2D.new()
+	flash.sprite_frames = get_strike_frames()
+	flash.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(flash)
+	# Rides the blade: sized to the reach, pinned near the tip.
+	flash.position = Vector2(0, -blade_length * 0.75)
+	flash.scale = Vector2.ONE * blade_length / 40.0
+	flash.z_index = 10
+	flash.play("strike")
 
 func _physics_process(delta: float) -> void:
 	timer -= delta

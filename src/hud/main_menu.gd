@@ -13,6 +13,7 @@ func _ready() -> void:
 
 func begin_game() -> void:
 	assert(level_scene, "level_scene is not set")
+	GameManager.play_sfx("select")
 	var gm: Node = get_node_or_null("/root/GameManager")
 	if gm != null and gm.has_method("start_new_game"):
 		gm.call("start_new_game")

@@ -49,6 +49,11 @@ func _process(_delta: float) -> void:
 	var current_weapon_name: String = str(player.get("current_weapon"))
 	if player_gun != null:
 		ammo_label.text = "AMMO: %d / %d" % [player_gun.current_ammo, player_gun.max_ammo]
-		ammo_label.visible = current_weapon_name == "gun"
+		ammo_label.visible = current_weapon_name == "pistol"
 
-	weapon_label.text = "KATANA [TAB]" if current_weapon_name != "gun" else "GUN [TAB]"
+	if current_weapon_name == "katana":
+		weapon_label.text = "KATANA [TAB]"
+	elif player_gun != null:
+		weapon_label.text = "%s [TAB]" % player_gun.weapon_name.to_upper()
+	else:
+		weapon_label.text = "PISTOL [TAB]"

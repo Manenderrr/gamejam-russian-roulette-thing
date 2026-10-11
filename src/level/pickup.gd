@@ -66,10 +66,12 @@ func _collect() -> void:
 	if player != null and is_instance_valid(player):
 		if pickup_type == "xp" and player.has_method("add_xp"):
 			player.call("add_xp", amount)
+			GameManager.play_sfx("take")
 		elif pickup_type == "ammo" and player.has_method("add_ammo"):
 			player.call("add_ammo", amount)
 		elif pickup_type == "heal" and player.has_method("heal"):
 			player.call("heal", float(amount))
+			GameManager.play_sfx("take")
 	collected.emit(pickup_type, amount)
 	queue_free()
 

@@ -36,6 +36,9 @@ from office planktons and security officers up to a boss that spawns minions.
 - `assets/gfx/` — pixel art sources (`.ase`/`.aseprite`) and exports
 - `assets/audio/` — menu and battle music
 
+## Music
+All music is written by Aust Alexander (known as D7TUN6 in music industry), main menu and battle1 track is unique, other are taken from D7TUN6's albums "B TWIN", "Wh1te Hous3" and "obksr3.e" (genres: braindance/hardcore)
+
 ## Made by
 
 - Artur Salyakhutdinov — sprites, characters

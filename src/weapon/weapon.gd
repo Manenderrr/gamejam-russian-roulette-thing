@@ -6,8 +6,8 @@ class_name Weapon
 @export var level: int = 1
 @export var max_level: int = 5
 
-func attack(_spawn_root: Node, _player_global_pos: Vector2, _mouse_global_pos: Vector2, _damage_mult: float, _wielder: Node2D = null) -> void:
-	pass
+func attack(_spawn_root: Node, _player_global_pos: Vector2, _mouse_global_pos: Vector2, _damage_mult: float, _wielder: Node2D = null) -> bool:
+	return false
 
 func get_upgrade_description() -> String:
 	return ""

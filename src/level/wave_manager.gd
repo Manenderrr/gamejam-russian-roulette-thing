@@ -23,6 +23,7 @@ var spawn_timer: float = 0.0
 var enemy_scenes: Array[PackedScene] = []
 var spawn_rooms: Array = []
 var map_bounds_px: Rect2 = Rect2()
+var blocked_cells: Dictionary = {}
 var player: Node2D = null
 # No spawns inside this radius around the player start: nobody gets
 # punched before they can react.
@@ -41,9 +42,10 @@ func start_waves(player_node: Node2D, enemy_scenes_array: Array[PackedScene]) ->
 	to_spawn = 0
 	# The level builds the floor first, then kicks off wave 1 itself.
 
-func set_arena(room_list: Array, bounds_px: Rect2) -> void:
+func set_arena(room_list: Array, bounds_px: Rect2, blocked: Dictionary = {}) -> void:
 	spawn_rooms = room_list
 	map_bounds_px = bounds_px
+	blocked_cells = blocked
 
 func _wave_quota(wave: int) -> int:
 	if wave == 5:
@@ -104,7 +106,15 @@ func _pick_room_point() -> Vector2:
 	var room: Rect2i = spawn_rooms[randi() % spawn_rooms.size()]
 	var tx: int = room.position.x + randi() % maxi(room.size.x, 1)
 	var ty: int = room.position.y + randi() % maxi(room.size.y, 1)
-	return Vector2((tx + 0.5) * tile_size, (ty + 0.5) * tile_size)
+	var cell := Vector2i(tx, ty)
+	for i in range(12):
+		if not blocked_cells.has(cell):
+			break
+		room = spawn_rooms[randi() % spawn_rooms.size()]
+		tx = room.position.x + randi() % maxi(room.size.x, 1)
+		ty = room.position.y + randi() % maxi(room.size.y, 1)
+		cell = Vector2i(tx, ty)
+	return Vector2((cell.x + 0.5) * tile_size, (cell.y + 0.5) * tile_size)
 
 func _farthest_room_point() -> Vector2:
 	var best := _pick_room_point()

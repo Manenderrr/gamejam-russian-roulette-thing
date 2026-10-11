@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://tcg1kfmvei1o"
+path="res://.godot/imported/Sprite анимация удара.ase-5b2747465b8b89476bb19d2c184af8a2.res"
+
+[deps]
+
+source_file="res://assets/gfx/animation/katana strike/Sprite анимация удара.ase"
+dest_files=["res://.godot/imported/Sprite анимация удара.ase-5b2747465b8b89476bb19d2c184af8a2.res"]
+
+[params]
+

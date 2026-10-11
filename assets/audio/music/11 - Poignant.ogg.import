@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bbaj4r53dnygm"
+path="res://.godot/imported/11 - Poignant.ogg-fd3f356c0cf0ad8faa989098b8cb00ab.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/music/11 - Poignant.ogg"
+dest_files=["res://.godot/imported/11 - Poignant.ogg-fd3f356c0cf0ad8faa989098b8cb00ab.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

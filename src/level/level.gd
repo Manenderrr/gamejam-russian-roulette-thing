@@ -20,6 +20,19 @@ var kills_since_heal: int = 0
 var astar := AStar2D.new()
 var astar_stride: int = 0
 var path_ready: bool = false
+# Furniture: solid room dressing on the grid; blocked cells stay out of
+# the path grid and enemy spawns.
+const FURN_TEX: Texture2D = preload("res://assets/gfx/furniture/furniture.png")
+const FURN_CORNER := 13
+const FURN_CABINETS: Array[int] = [14, 15, 16, 19, 20]
+const FURN_TABLES: Array[int] = [17, 18]
+const FURN_DOOR := 21
+const DECO_WINDOW := 6
+const DECO_VENTS: Array[int] = [8, 9, 10]
+const DECO_DOOR := 11
+const DECO_MISC: Array[int] = [7, 12, 13]
+var furniture_nodes: Array[Node] = []
+var blocked_cells: Dictionary = {}
 
 func _ready() -> void:
 	add_to_group("level")
@@ -57,22 +70,25 @@ func _ready() -> void:
 	begin_wave()
 
 func begin_wave() -> void:
+	# Floor change sweeps every leftover: enemies, bullets, drops, bodies.
+	get_tree().call_group("enemies", "queue_free")
+	get_tree().call_group("bullets", "queue_free")
+	get_tree().call_group("pickups", "queue_free")
+	get_tree().call_group("corpses", "queue_free")
 	# Fresh roguelike floor every wave; player keeps stats and loot.
 	_build_floor(wave_manager.get_current_wave() + 1)
-	wave_manager.set_arena(wave_manager.spawn_rooms, map_bounds_px)
+	wave_manager.set_arena(wave_manager.spawn_rooms, map_bounds_px, blocked_cells)
 	wave_manager.safe_center = player.global_position
 	wave_manager.call("_start_next_wave")
 
-const FLOOR_PLAIN: int = 0
-const TRIM_NORTH: int = 1
-const TRIM_SE: int = 2
-
 func _build_floor(wave_number: int) -> void:
 	tile_map.clear()
+	_clear_furniture()
 	var gen := RoomGenerator.new()
-	var result: Dictionary = gen.generate(84, 84, 10, 6, 13, wave_number * 7919 + 13)
+	var result: Dictionary = gen.generate(84, 84, 10, 6, 13)
 	var rooms: Array = result["rooms"]
 	var floor_set: Dictionary = result["floors"]
+	var corridor_set: Dictionary = result["corridors"]
 	var map_w: int = result["map_w"]
 	var map_h: int = result["map_h"]
 
@@ -110,6 +126,8 @@ func _build_floor(wave_number: int) -> void:
 
 	BetterTerrain.update_terrain_area(tile_map, Rect2i(0, 0, map_w, map_h), false)
 
+	_place_furniture_pass(floor_set, corridor_set, rooms, wave_number, map_w, map_h)
+	_place_deco_pass(floor_set, map_w, map_h)
 	_build_pathgrid(floor_set, map_w)
 
 	var room_list: Array = []
@@ -135,14 +153,18 @@ func _build_pathgrid(floor_set: Dictionary, map_w: int) -> void:
 	astar_stride = maxi(map_w, 1)
 	for cell in floor_set:
 		var c: Vector2i = cell
+		if blocked_cells.has(c):
+			continue
 		astar.add_point(_cell_id(c), Vector2(c))
 	for cell in floor_set:
 		var c: Vector2i = cell
+		if blocked_cells.has(c):
+			continue
 		var e: Vector2i = c + Vector2i(1, 0)
 		var s: Vector2i = c + Vector2i(0, 1)
-		if floor_set.has(e):
+		if floor_set.has(e) and not blocked_cells.has(e):
 			astar.connect_points(_cell_id(c), _cell_id(e))
-		if floor_set.has(s):
+		if floor_set.has(s) and not blocked_cells.has(s):
 			astar.connect_points(_cell_id(c), _cell_id(s))
 	path_ready = true
 
@@ -168,6 +190,170 @@ func snap_to_floor(px: Vector2) -> Vector2:
 	if id < 0 or not astar.has_point(id):
 		return px
 	return tile_map.to_global(tile_map.map_to_local(Vector2i(astar.get_point_position(id))))
+
+func _clear_furniture() -> void:
+	for n in furniture_nodes:
+		if is_instance_valid(n):
+			n.queue_free()
+	furniture_nodes.clear()
+	blocked_cells.clear()
+
+func _room_at(c: Vector2i, rooms: Array) -> bool:
+	for r in rooms:
+		if (r as Rect2i).has_point(c):
+			return true
+	return false
+
+func _furn_excluded(c: Vector2i, door_zone: Dictionary, used: Dictionary, start_cell: Vector2i) -> bool:
+	if door_zone.has(c) or used.has(c):
+		return true
+	if maxi(absi(c.x - start_cell.x), absi(c.y - start_cell.y)) <= 2:
+		return true
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if door_zone.has(c + Vector2i(dx, dy)):
+				return true
+	return false
+
+func _place_furniture(c: Vector2i, tile: int, used: Dictionary) -> void:
+	used[c] = true
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			used[c + Vector2i(dx, dy)] = true
+	var body := StaticBody2D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.position = (Vector2(c) + Vector2(0.5, 0.5)) * TILE
+	var cs := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(14, 14)
+	cs.shape = rect
+	body.add_child(cs)
+	body.add_child(_furn_sprite(tile))
+	add_child(body)
+	furniture_nodes.append(body)
+	blocked_cells[c] = true
+
+func _furn_sprite(tile: int) -> Sprite2D:
+	var at := AtlasTexture.new()
+	at.atlas = FURN_TEX
+	at.region = Rect2(tile * TILE, 0, TILE, TILE)
+	var spr := Sprite2D.new()
+	spr.texture = at
+	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	return spr
+
+func _place_deco(c: Vector2i, tile: int, used: Dictionary) -> void:
+	used[c] = true
+	var deco := Node2D.new()
+	deco.position = (Vector2(c) + Vector2(0.5, 0.5)) * TILE
+	deco.add_child(_furn_sprite(tile))
+	add_child(deco)
+	furniture_nodes.append(deco)
+
+func _is_solid_wall(c: Vector2i, floor_set: Dictionary, map_w: int, map_h: int) -> bool:
+	# A real painted wall: in bounds, not floor, actually drawn.
+	if c.x < 0 or c.y < 0 or c.x >= map_w or c.y >= map_h:
+		return false
+	if floor_set.has(c):
+		return false
+	return tile_map.get_cell_source_id(c) != -1
+
+func _place_furniture_pass(floor_set: Dictionary, corridor_set: Dictionary, rooms: Array, wave_number: int, map_w: int, map_h: int) -> void:
+	if rooms.is_empty():
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var first: Rect2i = rooms[0]
+	var start_cell := Vector2i(int(first.position.x + first.size.x * 0.5), int(first.position.y + first.size.y * 0.5))
+	var door_zone := {}
+	for cell in floor_set:
+		var c: Vector2i = cell
+		if corridor_set.has(c) or not _room_at(c, rooms):
+			continue
+		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			if corridor_set.has(c + d):
+				door_zone[c] = true
+				break
+	var used := {}
+	for cell in floor_set:
+		var c: Vector2i = cell
+		if corridor_set.has(c) or not _room_at(c, rooms) or _furn_excluded(c, door_zone, used, start_cell):
+			continue
+		var e: Vector2i = c + Vector2i(1, 0)
+		var n: Vector2i = c + Vector2i(0, -1)
+		var w: Vector2i = c + Vector2i(-1, 0)
+		var wall_e: bool = _is_solid_wall(e, floor_set, map_w, map_h)
+		var wall_n: bool = _is_solid_wall(n, floor_set, map_w, map_h)
+		var wall_w: bool = _is_solid_wall(w, floor_set, map_w, map_h)
+		if wall_e and rng.randf() < 0.35:
+			_place_furniture(c, FURN_CABINETS[rng.randi() % FURN_CABINETS.size()], used)
+		elif wall_n and wall_w and rng.randf() < 0.5:
+			_place_furniture(c, FURN_CORNER, used)
+	for ri in range(rooms.size()):
+		if rng.randf() > 0.6:
+			continue
+		var room: Rect2i = rooms[ri]
+		for attempt in range(6):
+			var px: int = room.position.x + rng.randi() % maxi(room.size.x - 1, 1)
+			var py: int = room.position.y + rng.randi() % maxi(room.size.y - 1, 1)
+			var patch := [Vector2i(px, py), Vector2i(px + 1, py), Vector2i(px, py + 1), Vector2i(px + 1, py + 1)]
+			var ok := true
+			for pc in patch:
+				if not floor_set.has(pc) or corridor_set.has(pc) or not _room_at(pc, rooms) or _furn_excluded(pc, door_zone, used, start_cell):
+					ok = false
+					break
+			if ok:
+				for pc in patch:
+					_place_deco(pc, FURN_TABLES[rng.randi() % FURN_TABLES.size()], used)
+				break
+	var walls := {}
+	for cell in floor_set:
+		var c: Vector2i = cell
+		for dx in [-1, 0, 1]:
+			for dy in [-1, 0, 1]:
+				var w: Vector2i = c + Vector2i(dx, dy)
+				if not floor_set.has(w):
+					walls[w] = true
+	for w in walls:
+		var wc: Vector2i = w
+		var south: Vector2i = wc + Vector2i(0, 1)
+		if used.has(wc) or not _is_solid_wall(wc, floor_set, map_w, map_h):
+			continue
+		if not floor_set.has(south) or corridor_set.has(south) or not _room_at(south, rooms):
+			continue
+		if not _is_solid_wall(wc + Vector2i(0, -1), floor_set, map_w, map_h):
+			continue
+		if rng.randf() < 0.12:
+			_place_deco(wc, FURN_DOOR, used)
+
+func _place_deco_pass(floor_set: Dictionary, map_w: int, map_h: int) -> void:
+	# Wall dressing from the tileset list: windows, vents, doors and red
+	# accents on real painted walls that face a room. Runs after the
+	# terrain update so the autotiler never overwrites them.
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	for cell in floor_set:
+		var c: Vector2i = cell
+		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var w: Vector2i = c + d
+			if floor_set.has(w) or not _in_map(w, map_w, map_h):
+				continue
+			if tile_map.get_cell_source_id(w) == -1:
+				continue
+			var roll: float = rng.randf()
+			var south_floor: bool = floor_set.has(w + Vector2i(0, 1))
+			if roll < 0.025 and south_floor:
+				tile_map.set_cell(w, 0, Vector2i(DECO_DOOR, 0))
+			elif roll < 0.09 and (south_floor or floor_set.has(w + Vector2i(1, 0))):
+				tile_map.set_cell(w, 0, Vector2i(DECO_WINDOW, 0))
+			elif roll < 0.15:
+				tile_map.set_cell(w, 0, Vector2i(DECO_VENTS[rng.randi() % DECO_VENTS.size()], 0))
+			elif roll < 0.19:
+				tile_map.set_cell(w, 0, Vector2i(DECO_MISC[rng.randi() % DECO_MISC.size()], 0))
+
+func _in_map(c: Vector2i, map_w: int, map_h: int) -> bool:
+	return c.x >= 0 and c.y >= 0 and c.x < map_w and c.y < map_h
 
 func clamp_to_map(pos: Vector2, margin: float = 20.0) -> Vector2:
 	if map_bounds_px.size.x <= 0.0:
@@ -214,12 +400,19 @@ func toggle_pause() -> void:
 func _on_wave_ended(_wave_number: int) -> void:
 	get_tree().call_group("enemies", "queue_free")
 	get_tree().call_group("bullets", "queue_free")
+	get_tree().call_group("pickups", "queue_free")
+	get_tree().call_group("corpses", "queue_free")
 
 func show_death() -> void:
 	if death_screen != null and death_screen.has_method("show_death"):
 		death_screen.call("show_death")
 
 func _on_upgrade_phase(choices: Array[Dictionary]) -> void:
+	# Breathe between the last kill and the reward screen so stray
+	# attack clicks can't insta-pick an upgrade.
+	await get_tree().create_timer(0.9).timeout
+	if not is_instance_valid(self) or upgrade_ui == null:
+		return
 	upgrade_ui.show_upgrades(choices, player.stats, player.katana, player.gun, wave_manager.get_current_wave())
 
 func _on_upgrade_selected(choice: Dictionary) -> void:
@@ -229,13 +422,13 @@ func _on_upgrade_selected(choice: Dictionary) -> void:
 				player.grow_max_hp()
 			elif String(choice.get("bonus", "")) == "katana":
 				player.upgrade_katana()
+			elif String(choice.get("bonus", "")) == "gun":
+				player.upgrade_gun_tier()
 		"stat":
 			player.upgrade_stat(String(choice.get("stat", "")))
 		"weapon":
 			if String(choice.get("weapon", "")) == "katana":
 				player.upgrade_katana()
-			elif String(choice.get("weapon", "")) == "gun":
-				player.upgrade_gun()
 
 	call_deferred("_start_next_wave_delayed")
 

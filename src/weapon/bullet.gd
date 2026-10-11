@@ -17,11 +17,15 @@ func _ready() -> void:
 	add_to_group("bullets")
 	collision_layer = 8
 	_apply_mask()
-	if get_node_or_null("Sprite2D") == null:
-		var spr := Sprite2D.new()
-		spr.texture = load("res://assets/gfx/weapon/gun/bullet.png") as Texture2D
-		spr.scale = Vector2(0.5, 0.5)
+	set_bullet_texture(load("res://assets/gfx/weapon/gun/bullet.png") as Texture2D, 0.5)
+
+func set_bullet_texture(tex: Texture2D, scl: float = 0.5) -> void:
+	var spr := get_node_or_null("Sprite2D") as Sprite2D
+	if spr == null:
+		spr = Sprite2D.new()
 		add_child(spr)
+	spr.texture = tex
+	spr.scale = Vector2(scl, scl)
 
 func _apply_mask() -> void:
 	if hostile:

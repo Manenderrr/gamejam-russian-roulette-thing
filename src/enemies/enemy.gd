@@ -17,6 +17,8 @@ var attack_timer: float = 0.0
 var player: Node2D = null
 var sprite: Sprite2D = null
 var collision_shape: CollisionShape2D = null
+var corpse_texture: Texture2D = null
+var corpse_scale := Vector2.ONE
 
 # Animation + facing. Subclasses fill walk/attack textures before super._ready().
 var idle_textures: Array[Texture2D] = []
@@ -37,7 +39,7 @@ var path_points := PackedVector2Array()
 var path_index: int = 0
 var repath_timer: float = 0.0
 const REPATH_INTERVAL: float = 0.4
-const WAYPOINT_RADIUS: float = 12.0
+const WAYPOINT_RADIUS: float = 14.0
 
 func _ready() -> void:
 	health = max_health
@@ -100,10 +102,11 @@ func _physics_process(delta: float) -> void:
 	# If we want to move but barely budge, we're wedged: sidestep to unstick.
 	if wants_to_move and velocity.length() < 15.0:
 		stuck_time += delta
-		if stuck_time > 0.7:
+		if stuck_time > 0.5:
 			stuck_time = 0.0
-			sidestep_time = 0.5
+			sidestep_time = 0.6
 			sidestep_dir *= -1.0
+			repath_timer = 0.0
 	else:
 		stuck_time = 0.0
 
@@ -122,6 +125,27 @@ func _refresh_path() -> void:
 	var lvl: Node = get_tree().get_first_node_in_group("level")
 	if lvl != null and lvl.has_method("find_path"):
 		path_points = lvl.call("find_path", global_position, player.global_position)
+		path_points = _simplify_path(path_points)
+
+func _simplify_path(pts: PackedVector2Array) -> PackedVector2Array:
+	# String-pulling: skip to the farthest waypoint with a clear line so
+	# the route cuts corners instead of grinding along every wall.
+	if pts.size() <= 3:
+		return pts
+	var out := PackedVector2Array()
+	var i := 0
+	out.append(pts[0])
+	while i < pts.size() - 1:
+		var j: int = mini(i + 12, pts.size() - 1)
+		while j > i + 1 and not _los_clear(pts[i], pts[j]):
+			j -= 1
+		out.append(pts[j])
+		i = j
+	return out
+
+func _los_clear(a: Vector2, b: Vector2) -> bool:
+	var query := PhysicsRayQueryParameters2D.create(a, b, 1)
+	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
 
 func _path_direction() -> Vector2:
 	while path_index < path_points.size():
@@ -160,6 +184,7 @@ func _update_animation(delta: float) -> void:
 
 func take_damage(amount: float) -> void:
 	health -= amount
+	GameManager.play_sfx("hit")
 	_flash_red()
 	if health <= 0.0:
 		die()
@@ -196,4 +221,19 @@ func die() -> void:
 	var lvl: Node = get_tree().get_first_node_in_group("level")
 	if lvl != null:
 		lvl.call_deferred("notify_enemy_killed", xp_reward, ammo_reward, heal_reward, heal_chance, global_position)
+		_spawn_corpse(lvl)
 	queue_free()
+
+func _spawn_corpse(lvl: Node) -> void:
+	if corpse_texture == null:
+		return
+	var body := Node2D.new()
+	body.add_to_group("corpses")
+	var spr := Sprite2D.new()
+	spr.texture = corpse_texture
+	spr.scale = corpse_scale
+	spr.rotation = rotation
+	spr.modulate = Color(0.75, 0.75, 0.75, 1.0)
+	body.add_child(spr)
+	lvl.add_child(body)
+	body.global_position = global_position

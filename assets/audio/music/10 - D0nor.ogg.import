@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bg4as64i16uf8"
+path="res://.godot/imported/10 - D0nor.ogg-242051dfb72c1508966c9d0cb7fa6bdb.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/music/10 - D0nor.ogg"
+dest_files=["res://.godot/imported/10 - D0nor.ogg-242051dfb72c1508966c9d0cb7fa6bdb.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
