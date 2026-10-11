@@ -31,6 +31,8 @@ texture = ExtResource("1_2urvg")
 3:0/0 = 0
 3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:0/0/metadata/_better_terrain = {
+0: [-1],
+4: [-1],
 8: [4],
 12: [4],
 &"symmetry": 7,
@@ -39,7 +41,7 @@ texture = ExtResource("1_2urvg")
 4:0/0 = 0
 4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:0/0/metadata/_better_terrain = {
-0: [4],
+4: [4],
 8: [4],
 &"symmetry": 7,
 &"type": 1
@@ -131,7 +133,8 @@ metadata/_better_terrain = {
 &"coord": Vector2i(2, 0),
 &"source_id": 2
 }], ["Plain wall", Color(0.62357974, 0.122616604, 0.4194149, 1), 0, [4], {
-&"path": ""
+&"coord": Vector2i(5, 0),
+&"source_id": 0
 }], ["Window", Color(0.4361808, 0.5946895, 0.88197803, 1), 0, [4], {
 &"path": ""
 }], ["Door", Color(0.9168986, 0.37721696, 0.3627574, 1), 0, [4], {
